@@ -3,11 +3,10 @@ use crate::instructions::Instruction;
 use crate::symbol_mapper::map_symbol_to_instruction as mapper;
 
 #[derive(Debug)]
-pub struct Pointer<'a> {
+pub struct Pointer {
     x: i32,
     y: i32,
     direction: Direction,
-    space: FungeSpace<'a>,
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -18,21 +17,24 @@ pub enum Direction {
     Right,
 }
 
-impl<'a> Pointer<'a> {
-    pub fn new(space: FungeSpace<'a>) -> Pointer<'a> {
+impl Pointer {
+    pub fn new() -> Pointer {
         Pointer {
             x: 0,
             y: 0,
             direction: Direction::Right,
-            space,
         }
     }
 
     pub fn move_vertically(&mut self, steps: i32) {
-        self.y = (self.y + steps) % self.space.height as i32;
+        self.y = self.y + steps;
     }
     pub fn move_horizontally(&mut self, steps: i32) {
-        self.x = (self.x + steps) % self.space.width as i32;
+        self.x = self.x + steps;
+    } 
+    pub fn wrap_pointer(&mut self, space: &FungeSpace){
+       self.y = self.y % space.height as i32;
+       self.x = self.x % space.width as i32;
     }
 
     pub fn change_direction(&mut self, direction: Direction) {
@@ -63,7 +65,7 @@ impl<'a> Pointer<'a> {
     pub fn move_right(&mut self) {
         self.move_horizontally(1);
     }
-    pub fn get_current_instruction(&self) -> Option<Instruction> {
-        return mapper(self.space.get_symbol_at(self.x as usize, self.y as usize));
+    pub fn get_current_instruction(&self, space: &FungeSpace) -> Option<Instruction> {
+        return mapper(space.get_symbol_at(self.x as usize, self.y as usize));
     }
 }

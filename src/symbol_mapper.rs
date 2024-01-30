@@ -6,13 +6,6 @@ use crate::instructions::{
 };
 
 pub fn map_symbol_to_instruction(symbol: char) -> Option<Instruction> {
-    if let Some(a) = symbol.to_digit(10) {
-        return Some(Instruction::PutInt(PutIntInstruction(a as i32)));
-    }
-
-    if symbol.is_alphabetic() {
-        return Some(Instruction::PutChar(PutCharInstruction(symbol)));
-    }
 
     let mapping = vec![
         InstructionSymbolMapping {
@@ -60,10 +53,23 @@ pub fn map_symbol_to_instruction(symbol: char) -> Option<Instruction> {
             symbol: '@',
         },
     ];
-    mapping
+
+    let mapped_value = mapping
         .iter()
         .find(move |mapping| mapping.symbol == symbol)
-        .map(|mapping| mapping.instruction)
+        .map(|mapping| mapping.instruction);
+
+    if mapped_value.is_some(){
+        return mapped_value;
+    }else if let Some(a) = symbol.to_digit(10) {
+        return Some(Instruction::PutInt(PutIntInstruction(a as i32)));
+    }
+    else if symbol.is_alphabetic(){
+        return Some(Instruction::PutChar(PutCharInstruction(symbol)));
+    }else{
+        return None
+    }
+
 }
 
 struct InstructionSymbolMapping {

@@ -47,11 +47,22 @@ pub trait Executable {
 mod stack_operations {
     use crate::{Interpreter, StackValue, Stackable};
 
+    pub fn convert_empty_stack_value_to_default_int(value: StackValue)->StackValue{
+        match value{
+            StackValue::Empty => StackValue::Int(0),
+            StackValue::Int(a) => StackValue::Int(a),
+            StackValue::Char(a) => StackValue::Int(a as i32)
+        }
+    }
+
     pub fn binary_arithmetic_operation_on_stack<F>(interpreter: &mut Interpreter, operation: F)
     where
         F: Fn(i32, i32) -> i32,
     {
-        let (a, b) = interpreter.get_stack().get_two_items_from_stack();
+        let (mut a,mut b) = interpreter.get_stack().get_two_items_from_stack();
+        a = convert_empty_stack_value_to_default_int(a);
+        b = convert_empty_stack_value_to_default_int(b);
+
         if let (StackValue::Int(a), StackValue::Int(b)) = (a, b) {
             interpreter
                 .get_stack()
