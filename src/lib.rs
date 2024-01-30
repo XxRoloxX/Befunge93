@@ -5,7 +5,7 @@ pub mod symbol_mapper;
 
 use funge_space::FungeSpace;
 use pointer::Pointer;
-pub struct Interpreter<'a>{
+pub struct Interpreter<'a> {
     space: FungeSpace<'a>,
     stack: Stack<StackValue>,
     is_running: bool,
@@ -52,9 +52,9 @@ impl Stack<StackValue> {
     }
 }
 
-impl<'a> Interpreter<'a>{
-    pub fn new(plain: &'a Vec<Vec<char>>) -> Interpreter<'a>{
-        Interpreter{
+impl<'a> Interpreter<'a> {
+    pub fn new(plain: &'a Vec<Vec<char>>) -> Interpreter<'a> {
+        Interpreter {
             space: FungeSpace::new(plain),
             pointer: Pointer::new(FungeSpace::new(plain)),
             stack: Stack { stack: Vec::new() },
@@ -84,19 +84,17 @@ impl<'a> Interpreter<'a>{
 
     pub fn run(&'a mut self) {
         while self.is_running {
-       
-         self.execute_current_instruction();
-       
-        // print!(
-        //         "Position: ({:?}), , Stack: {:?}\n",
-        //         self.pointer,
-        //         self.stack.stack
-        //     );
-       
-        self.pointer.current_move();
+            self.execute_current_instruction();
+
+            // print!(
+            //         "Position: ({:?}), , Stack: {:?}\n",
+            //         self.pointer,
+            //         self.stack.stack
+            //     );
+
+            self.pointer.current_move();
         }
-        
-       // }
+
+        // }
     }
-    
 }

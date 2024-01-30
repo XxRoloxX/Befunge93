@@ -18,16 +18,16 @@ pub enum Direction {
     Right,
 }
 
-impl<'a> Pointer<'a>{
+impl<'a> Pointer<'a> {
     pub fn new(space: FungeSpace<'a>) -> Pointer<'a> {
         Pointer {
             x: 0,
             y: 0,
             direction: Direction::Right,
-            space
+            space,
         }
     }
-    
+
     pub fn move_vertically(&mut self, steps: i32) {
         self.y = (self.y + steps) % self.space.height as i32;
     }

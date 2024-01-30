@@ -1,7 +1,7 @@
 #[derive(Debug)]
-pub struct FungeSpace<'a>{
+pub struct FungeSpace<'a> {
     pub plain: &'a Vec<Vec<char>>,
-    pub height:usize,
+    pub height: usize,
     pub width: usize,
 }
 

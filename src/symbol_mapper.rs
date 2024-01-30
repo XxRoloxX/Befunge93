@@ -1,7 +1,8 @@
 use crate::instructions::{
-    AddInstruction, DivInstruction, FinishInstruction, Instruction, MoveUpInstruction,
-    MulInstruction, PrintCharInstruction, PrintIntInstruction, PutCharInstruction,
-    PutIntInstruction, SubInstruction,MoveDownInstruction,MoveLeftInstruction,MoveRightInstruction
+    AddInstruction, DivInstruction, FinishInstruction, Instruction, MoveDownInstruction,
+    MoveLeftInstruction, MoveRightInstruction, MoveUpInstruction, MulInstruction,
+    PrintCharInstruction, PrintIntInstruction, PutCharInstruction, PutIntInstruction,
+    SubInstruction,
 };
 
 pub fn map_symbol_to_instruction(symbol: char) -> Option<Instruction> {
@@ -15,47 +16,47 @@ pub fn map_symbol_to_instruction(symbol: char) -> Option<Instruction> {
 
     let mapping = vec![
         InstructionSymbolMapping {
-            instruction: Instruction::MoveUp(MoveUpInstruction{}),
+            instruction: Instruction::MoveUp(MoveUpInstruction {}),
             symbol: '^',
         },
         InstructionSymbolMapping {
-            instruction: Instruction::MoveDown(MoveDownInstruction{}),
+            instruction: Instruction::MoveDown(MoveDownInstruction {}),
             symbol: 'v',
         },
         InstructionSymbolMapping {
-            instruction: Instruction::MoveLeft(MoveLeftInstruction{}),
+            instruction: Instruction::MoveLeft(MoveLeftInstruction {}),
             symbol: '<',
         },
         InstructionSymbolMapping {
-            instruction: Instruction::MoveRight(MoveRightInstruction{}),
+            instruction: Instruction::MoveRight(MoveRightInstruction {}),
             symbol: '>',
         },
         InstructionSymbolMapping {
-            instruction: Instruction::Add(AddInstruction{}),
+            instruction: Instruction::Add(AddInstruction {}),
             symbol: '+',
         },
         InstructionSymbolMapping {
-            instruction: Instruction::Sub(SubInstruction{}),
+            instruction: Instruction::Sub(SubInstruction {}),
             symbol: '-',
         },
         InstructionSymbolMapping {
-            instruction: Instruction::Mul(MulInstruction{}),
+            instruction: Instruction::Mul(MulInstruction {}),
             symbol: '*',
         },
         InstructionSymbolMapping {
-            instruction: Instruction::Div(DivInstruction{}),
+            instruction: Instruction::Div(DivInstruction {}),
             symbol: '/',
         },
         InstructionSymbolMapping {
-            instruction: Instruction::PrintInt(PrintIntInstruction{}),
+            instruction: Instruction::PrintInt(PrintIntInstruction {}),
             symbol: '.',
         },
         InstructionSymbolMapping {
-            instruction: Instruction::PrintChar(PrintCharInstruction{}),
+            instruction: Instruction::PrintChar(PrintCharInstruction {}),
             symbol: ',',
         },
         InstructionSymbolMapping {
-            instruction: Instruction::Finish(FinishInstruction{}),
+            instruction: Instruction::Finish(FinishInstruction {}),
             symbol: '@',
         },
     ];
