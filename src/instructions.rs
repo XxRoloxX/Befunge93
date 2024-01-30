@@ -1,7 +1,7 @@
+use crate::pointer::Direction;
 use crate::Interpreter;
 use crate::StackValue;
 use crate::Stackable;
-use crate::pointer::Direction;
 
 #[derive(Debug, Clone, Copy)]
 pub enum Instruction {
@@ -21,7 +21,7 @@ pub enum Instruction {
 }
 
 impl Instruction {
-    pub fn execute(&self, interpreter: &mut Interpreter) {
+    pub fn execute<'a>(&self, interpreter: &'a mut Interpreter) {
         match self {
             Instruction::MoveUp(i) => i.execute(interpreter),
             Instruction::MoveDown(i) => i.execute(interpreter),
@@ -33,9 +33,9 @@ impl Instruction {
             Instruction::Div(i) => i.execute(interpreter),
             Instruction::PrintChar(i) => i.execute(interpreter),
             Instruction::PrintInt(i) => i.execute(interpreter),
-            Instruction::Finish(i)=> i.execute(interpreter),
-            Instruction::PutInt(i) => i.execute(interpreter),
+            Instruction::Finish(i) => i.execute(interpreter),
             Instruction::PutChar(i) => i.execute(interpreter),
+            Instruction::PutInt(i) => i.execute(interpreter),
         }
     }
 }
@@ -61,54 +61,52 @@ mod stack_operations {
 }
 
 mod pointer_operations {
-    use crate::Interpreter;
     use crate::pointer::Direction;
+    use crate::Interpreter;
 
-    pub fn change_pointer_direction(interpreter: &mut Interpreter, direction: Direction){
-        interpreter.get_pointer().change_direction(direction);
+    pub fn change_pointer_direction<'a>(interpreter: &'a mut Interpreter, direction: Direction) {
+        interpreter.pointer.change_direction(direction);
     }
-
 }
 
 #[derive(Debug, Clone, Copy)]
-struct AddInstruction {}
+pub struct AddInstruction {}
 
 #[derive(Debug, Clone, Copy)]
-struct SubInstruction {}
+pub struct SubInstruction {}
 
 #[derive(Debug, Clone, Copy)]
-struct DivInstruction {}
+pub struct DivInstruction {}
 
 #[derive(Debug, Clone, Copy)]
-struct MulInstruction {}
+pub struct MulInstruction {}
 
 #[derive(Debug, Clone, Copy)]
-struct PrintCharInstruction {}
+pub struct PrintCharInstruction {}
 
 #[derive(Debug, Clone, Copy)]
-struct PrintIntInstruction {}
+pub struct PrintIntInstruction {}
 
 #[derive(Debug, Clone, Copy)]
-struct FinishInstruction {}
+pub struct FinishInstruction {}
 
 #[derive(Debug, Clone, Copy)]
-struct PutIntInstruction(i32);
+pub struct PutIntInstruction(pub i32);
 
 #[derive(Debug, Clone, Copy)]
-struct PutCharInstruction(char);
+pub struct PutCharInstruction(pub char);
 
 #[derive(Debug, Clone, Copy)]
-struct MoveUpInstruction {}
+pub struct MoveUpInstruction {}
 
 #[derive(Debug, Clone, Copy)]
-struct MoveDownInstruction {}
+pub struct MoveDownInstruction {}
 
 #[derive(Debug, Clone, Copy)]
-struct MoveLeftInstruction {}
+pub struct MoveLeftInstruction {}
 
 #[derive(Debug, Clone, Copy)]
-struct MoveRightInstruction {}
-
+pub struct MoveRightInstruction {}
 
 impl Executable for AddInstruction {
     fn execute(&self, interpreter: &mut Interpreter) {
@@ -151,10 +149,9 @@ impl Executable for PrintIntInstruction {
 
 impl Executable for FinishInstruction {
     fn execute(&self, interpreter: &mut Interpreter) {
-       interpreter.finish_execution(); 
+        interpreter.finish_execution();
     }
 }
-
 
 impl Executable for PutIntInstruction {
     fn execute(&self, interpreter: &mut Interpreter) {
@@ -169,31 +166,25 @@ impl Executable for PutCharInstruction {
 }
 
 impl Executable for MoveUpInstruction {
-
-    fn execute(&self, interpreter: &mut Interpreter) {
+    fn execute<'a>(&self, interpreter: &'a mut Interpreter) {
         pointer_operations::change_pointer_direction(interpreter, Direction::Up);
     }
 }
 
 impl Executable for MoveDownInstruction {
-
-    fn execute(&self, interpreter: &mut Interpreter) {
+    fn execute<'a>(&self, interpreter: &'a mut Interpreter) {
         pointer_operations::change_pointer_direction(interpreter, Direction::Down);
     }
 }
 
-
 impl Executable for MoveRightInstruction {
-
-    fn execute(&self, interpreter: &mut Interpreter) {
+    fn execute<'a>(&self, interpreter: &'a mut Interpreter) {
         pointer_operations::change_pointer_direction(interpreter, Direction::Right);
     }
 }
 
 impl Executable for MoveLeftInstruction {
-
-    fn execute(&self, interpreter: &mut Interpreter) {
+    fn execute<'a>(&self, interpreter: &'a mut Interpreter) {
         pointer_operations::change_pointer_direction(interpreter, Direction::Left);
     }
 }
-

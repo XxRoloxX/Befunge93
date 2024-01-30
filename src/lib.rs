@@ -5,10 +5,8 @@ pub mod symbol_mapper;
 
 use funge_space::FungeSpace;
 use pointer::Pointer;
-use instructions::Instruction;
-
-pub struct Interpreter<'a> {
-    space: FungeSpace,
+pub struct Interpreter<'a>{
+    space: FungeSpace<'a>,
     stack: Stack<StackValue>,
     is_running: bool,
     pointer: Pointer<'a>,
@@ -54,22 +52,21 @@ impl Stack<StackValue> {
     }
 }
 
-impl<'a> Interpreter<'a> {
-    pub fn new(plain: Vec<Vec<char>>) -> Interpreter<'a> {
-        let space = FungeSpace::new(plain);
-        Interpreter {
-            space,
+impl<'a> Interpreter<'a>{
+    pub fn new(plain: &'a Vec<Vec<char>>) -> Interpreter<'a>{
+        Interpreter{
+            space: FungeSpace::new(plain),
+            pointer: Pointer::new(FungeSpace::new(plain)),
             stack: Stack { stack: Vec::new() },
             is_running: true,
-            pointer: Pointer::new(&space),
         }
     }
 
     pub fn get_space(&self) -> &FungeSpace {
         &self.space
     }
-    pub fn get_pointer(&self) -> &Pointer {
-        &self.pointer
+    pub fn get_pointer(&'a mut self) -> &mut Pointer {
+        &mut self.pointer
     }
     pub fn get_stack(&mut self) -> &mut Stack<StackValue> {
         &mut self.stack
@@ -78,17 +75,28 @@ impl<'a> Interpreter<'a> {
     fn finish_execution(&mut self) {
         self.is_running = false;
     }
-
-    pub fn run(&mut self) {
-        while self.is_running {
-            if let Some(instruction) = self.pointer.get_current_instruction() {
-                instruction.execute(self);
-            }
-            print!(
-                "Position: ({:?}), , Stack: {:?}\n",
-                self.get_pointer(), self.stack.stack
-            );
-            self.get_pointer().current_move();
+    fn execute_current_instruction(&mut self) {
+        let instruction = self.pointer.get_current_instruction();
+        if let Some(instruction) = instruction {
+            instruction.execute(self);
         }
     }
+
+    pub fn run(&'a mut self) {
+        while self.is_running {
+       
+         self.execute_current_instruction();
+       
+        // print!(
+        //         "Position: ({:?}), , Stack: {:?}\n",
+        //         self.pointer,
+        //         self.stack.stack
+        //     );
+       
+        self.pointer.current_move();
+        }
+        
+       // }
+    }
+    
 }
