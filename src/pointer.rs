@@ -4,8 +4,8 @@ use crate::symbol_mapper::map_symbol_to_instruction as mapper;
 
 #[derive(Debug)]
 pub struct Pointer {
-    x: i32,
-    y: i32,
+    x: usize,
+    y: usize,
     direction: Direction,
 }
 
@@ -27,14 +27,14 @@ impl Pointer {
     }
 
     pub fn move_vertically(&mut self, steps: i32) {
-        self.y = self.y + steps;
+        self.y = (self.y as i32 + steps) as usize;
     }
     pub fn move_horizontally(&mut self, steps: i32) {
-        self.x = self.x + steps;
+        self.x = (self.x as i32 + steps) as usize;
     } 
     pub fn wrap_pointer(&mut self, space: &FungeSpace){
-       self.y = self.y % space.height as i32;
-       self.x = self.x % space.width as i32;
+       self.y = self.y % space.height as usize;
+       self.x = self.x % space.width as usize;
     }
 
     pub fn change_direction(&mut self, direction: Direction) {

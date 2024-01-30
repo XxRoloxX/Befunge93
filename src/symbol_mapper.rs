@@ -2,7 +2,8 @@ use crate::instructions::{
     AddInstruction, DivInstruction, FinishInstruction, Instruction, MoveDownInstruction,
     MoveLeftInstruction, MoveRightInstruction, MoveUpInstruction, MulInstruction,
     PrintCharInstruction, PrintIntInstruction, PutCharInstruction, PutIntInstruction,
-    SubInstruction,
+    SubInstruction, ModInstruction, HorizontalIfInstruction, VerticalIfInstruction,
+    BridgeInstruction, DuplicateInstruction , InputIntInstruction, InputCharInstruction
 };
 
 pub fn map_symbol_to_instruction(symbol: char) -> Option<Instruction> {
@@ -52,6 +53,35 @@ pub fn map_symbol_to_instruction(symbol: char) -> Option<Instruction> {
             instruction: Instruction::Finish(FinishInstruction {}),
             symbol: '@',
         },
+        InstructionSymbolMapping{
+            instruction: Instruction::Mod(ModInstruction{}),
+            symbol: '%'
+        },
+        InstructionSymbolMapping{
+            instruction: Instruction::HorizontalIf(HorizontalIfInstruction{}),
+            symbol: '_'
+        },
+        InstructionSymbolMapping{
+            instruction: Instruction::VerticalIf(VerticalIfInstruction{}),
+            symbol: '|'
+        },
+        InstructionSymbolMapping{
+            instruction: Instruction::Bridge(BridgeInstruction{}),
+            symbol: '#'
+        },
+        InstructionSymbolMapping{
+            instruction: Instruction::Duplicate(DuplicateInstruction{}),
+            symbol: ':'
+        },
+        InstructionSymbolMapping{
+            instruction: Instruction::InputInt(InputIntInstruction{}),
+            symbol: '&'
+        },
+        InstructionSymbolMapping{
+            instruction: Instruction::InputChar(InputCharInstruction{}),
+            symbol: '~'
+        },
+        
     ];
 
     let mapped_value = mapping

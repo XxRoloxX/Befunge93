@@ -1,31 +1,29 @@
 #[derive(Debug)]
 pub struct FungeSpace {
-    pub plain: Vec<Vec<char>>,
+    pub plain: [[char; 25];80],
     pub height: usize,
     pub width: usize,
 }
 
 
-fn format_string_to_vec_of_vecs(plain: &str) -> Vec<Vec<char>> {
-    let mut result = Vec::new();
-    for line in plain.lines() {
-        let mut line_vec = Vec::new();
-        for c in line.chars() {
-            line_vec.push(c);
+fn format_string_to_matrix(plain: &str) -> [[char; 25]; 80] {
+    let mut matrix = [[' ';25];80];
+    for (row,line) in plain.lines().enumerate() {
+        for (col, character) in line.chars().enumerate() {
+            matrix[row][col] = character;
         }
-        result.push(line_vec);
-    }
-    result
+    };
+    return matrix;
 }
 
 
 impl FungeSpace {
     pub fn new(plain: &str) -> FungeSpace {
-        let formated_plain = format_string_to_vec_of_vecs(plain);
-        let width = formated_plain.first().map(|e| e.len()).unwrap_or(0);
-        let height = formated_plain.len();
+        let matrix = format_string_to_matrix(plain);
+        let width = 25;
+        let height = 80;
         FungeSpace {
-            plain: formated_plain,
+            plain: matrix,
             width,
             height
         }

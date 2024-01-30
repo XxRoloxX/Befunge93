@@ -96,11 +96,11 @@ impl Interpreter {
     pub fn run(&mut self) {
         while self.is_running {
             self.execute_current_instruction();
-            print!(
-                    "Position: ({:?}), , Stack: {:?}\n",
-                    self.pointer,
-                    self.stack.stack
-                );
+            // print!(
+            //         "Position: ({:?}), , Stack: {:?}\n",
+            //         self.pointer,
+            //         self.stack.stack
+            //     );
             self.pointer.current_move();
             self.pointer.wrap_pointer(&self.space);
         }
