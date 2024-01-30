@@ -3,7 +3,8 @@ use crate::instructions::{
     MoveLeftInstruction, MoveRightInstruction, MoveUpInstruction, MulInstruction,
     PrintCharInstruction, PrintIntInstruction, PutCharInstruction, PutIntInstruction,
     SubInstruction, ModInstruction, HorizontalIfInstruction, VerticalIfInstruction,
-    BridgeInstruction, DuplicateInstruction , InputIntInstruction, InputCharInstruction
+    BridgeInstruction, DuplicateInstruction , InputIntInstruction, InputCharInstruction,
+    PopValueInstruction, SwapInstruction
 };
 
 pub fn map_symbol_to_instruction(symbol: char) -> Option<Instruction> {
@@ -80,6 +81,14 @@ pub fn map_symbol_to_instruction(symbol: char) -> Option<Instruction> {
         InstructionSymbolMapping{
             instruction: Instruction::InputChar(InputCharInstruction{}),
             symbol: '~'
+        },
+        InstructionSymbolMapping{
+            instruction: Instruction::PopValue(PopValueInstruction{}),
+            symbol: '$'
+        },
+        InstructionSymbolMapping{
+            instruction: Instruction::Swap(SwapInstruction{}),
+            symbol: '\\'
         },
         
     ];

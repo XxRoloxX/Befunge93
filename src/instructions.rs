@@ -4,6 +4,8 @@ use crate::StackValue;
 use crate::Stackable;
 use std::io::Read;
 
+use self::stack_operations::convert_empty_stack_value_to_default_int;
+
 #[derive(Debug, Clone, Copy)]
 pub enum Instruction {
     MoveUp(MoveUpInstruction),
@@ -26,6 +28,8 @@ pub enum Instruction {
     Duplicate(DuplicateInstruction),
     InputInt(InputIntInstruction),
     InputChar(InputCharInstruction),
+    PopValue(PopValueInstruction),
+    Swap(SwapInstruction),
 }
 
 impl Instruction {
@@ -51,6 +55,8 @@ impl Instruction {
             Instruction::Duplicate(i) => i.execute(interpreter),
             Instruction::InputInt(i) => i.execute(interpreter),
             Instruction::InputChar(i) => i.execute(interpreter),
+            Instruction::Swap(i)=>i.execute(interpreter),
+            Instruction::PopValue(i)=>i.execute(interpreter)
         }
     }
 }
@@ -155,6 +161,13 @@ pub struct InputIntInstruction{}
 #[derive(Debug, Clone,Copy)]
 pub struct InputCharInstruction{}
 
+#[derive(Debug, Clone,Copy)]
+pub struct PopValueInstruction{}
+
+#[derive(Debug, Clone,Copy)]
+pub struct SwapInstruction{}
+
+
 impl Executable for AddInstruction {
     fn execute(&self, interpreter: &mut Interpreter) {
         stack_operations::binary_arithmetic_operation_on_stack(interpreter, |a, b| a + b);
@@ -169,7 +182,7 @@ impl Executable for ModInstruction {
 
 impl Executable for SubInstruction {
     fn execute(&self, interpreter: &mut Interpreter) {
-        stack_operations::binary_arithmetic_operation_on_stack(interpreter, |a, b| a - b);
+        stack_operations::binary_arithmetic_operation_on_stack(interpreter, |a, b| b - a);
     }
 }
 impl Executable for DivInstruction {
@@ -313,5 +326,18 @@ impl Executable for InputCharInstruction {
     }
 }
 
+
+impl Executable for PopValueInstruction {
+    fn execute<'a>(&self, interpreter: &'a mut Interpreter) {
+        interpreter.get_stack().remove_value_from_stack();
+    }
+}
+impl Executable for SwapInstruction {
+    fn execute<'a>(&self, interpreter: &'a mut Interpreter) {
+        let (a, b) = interpreter.get_stack().get_two_items_from_stack();
+        interpreter.get_stack().push(convert_empty_stack_value_to_default_int(a));
+        interpreter.get_stack().push(convert_empty_stack_value_to_default_int(b));
+    }
+}
 
 
