@@ -1,23 +1,23 @@
 use crate::pointer::Direction;
 use crate::Interpreter;
+use crate::ReadMode;
 use crate::StackValue;
 use crate::Stackable;
-use crate::ReadMode;
 
 use self::stack_operations::convert_empty_stack_value_to_default_int;
 
-pub trait Executable: Sync +Send + 'static {
+pub trait Executable: Sync + Send + 'static {
     fn execute(&self, interpreter: &mut Interpreter);
 }
 
 mod stack_operations {
     use crate::{Interpreter, StackValue, Stackable};
 
-    pub fn convert_empty_stack_value_to_default_int(value: StackValue)->StackValue{
-        match value{
+    pub fn convert_empty_stack_value_to_default_int(value: StackValue) -> StackValue {
+        match value {
             StackValue::Empty => StackValue::Int(0),
             StackValue::Int(a) => StackValue::Int(a),
-            StackValue::Char(a) => StackValue::Int(a as i32)
+            StackValue::Char(a) => StackValue::Int(a as i32),
         }
     }
 
@@ -25,7 +25,7 @@ mod stack_operations {
     where
         F: Fn(i32, i32) -> i32,
     {
-        let (mut a,mut b) = interpreter.get_stack().get_two_items_from_stack();
+        let (mut a, mut b) = interpreter.get_stack().get_two_items_from_stack();
         a = convert_empty_stack_value_to_default_int(a);
         b = convert_empty_stack_value_to_default_int(b);
 
@@ -42,7 +42,7 @@ mod pointer_operations {
     use crate::Interpreter;
 
     pub fn change_pointer_direction<'a>(interpreter: &'a mut Interpreter, direction: Direction) {
-        interpreter.pointer.change_direction(direction);
+        interpreter.get_pointer().change_direction(direction);
     }
 }
 
@@ -101,20 +101,19 @@ pub struct VerticalIfInstruction {}
 pub struct BridgeInstruction {}
 
 #[derive(Debug, Clone, Copy)]
-pub struct DuplicateInstruction{}
+pub struct DuplicateInstruction {}
 
-#[derive(Debug, Clone,Copy)]
-pub struct InputIntInstruction{}
+#[derive(Debug, Clone, Copy)]
+pub struct InputIntInstruction {}
 
-#[derive(Debug, Clone,Copy)]
-pub struct InputCharInstruction{}
+#[derive(Debug, Clone, Copy)]
+pub struct InputCharInstruction {}
 
-#[derive(Debug, Clone,Copy)]
-pub struct PopValueInstruction{}
+#[derive(Debug, Clone, Copy)]
+pub struct PopValueInstruction {}
 
-#[derive(Debug, Clone,Copy)]
-pub struct SwapInstruction{}
-
+#[derive(Debug, Clone, Copy)]
+pub struct SwapInstruction {}
 
 impl Executable for AddInstruction {
     fn execute(&self, interpreter: &mut Interpreter) {
@@ -124,7 +123,7 @@ impl Executable for AddInstruction {
 
 impl Executable for ModInstruction {
     fn execute(&self, interpreter: &mut Interpreter) {
-        stack_operations::binary_arithmetic_operation_on_stack(interpreter, |a, b| a%b);
+        stack_operations::binary_arithmetic_operation_on_stack(interpreter, |a, b| a % b);
     }
 }
 
@@ -146,18 +145,42 @@ impl Executable for MulInstruction {
 impl Executable for PrintCharInstruction {
     fn execute(&self, interpreter: &mut Interpreter) {
         match interpreter.get_stack().remove_value_from_stack() {
-            StackValue::Int(val) => interpreter.get_output().borrow_mut().write(&[val as u8]).unwrap(),
-            StackValue::Char(val) => interpreter.get_output().borrow_mut().write(&[val as u8]).unwrap(),
-            StackValue::Empty => interpreter.get_output().borrow_mut().write(&"Stack is empty!".as_bytes()).unwrap(),
+            StackValue::Int(val) => interpreter
+                .get_output()
+                .borrow_mut()
+                .write(&[val as u8])
+                .unwrap(),
+            StackValue::Char(val) => interpreter
+                .get_output()
+                .borrow_mut()
+                .write(&[val as u8])
+                .unwrap(),
+            StackValue::Empty => interpreter
+                .get_output()
+                .borrow_mut()
+                .write(&"Stack is empty!".as_bytes())
+                .unwrap(),
         };
     }
 }
 impl Executable for PrintIntInstruction {
     fn execute(&self, interpreter: &mut Interpreter) {
         match interpreter.get_stack().remove_value_from_stack() {
-            StackValue::Char(c) => interpreter.get_output().borrow_mut().write(&[c as u8]).unwrap(),
-            StackValue::Int(i) => interpreter.get_output().borrow_mut().write(&i.to_string().as_bytes()).unwrap(),
-            StackValue::Empty => interpreter.get_output().borrow_mut().write(&"Stack is empty!".as_bytes()).unwrap(),
+            StackValue::Char(c) => interpreter
+                .get_output()
+                .borrow_mut()
+                .write(&[c as u8])
+                .unwrap(),
+            StackValue::Int(i) => interpreter
+                .get_output()
+                .borrow_mut()
+                .write(&i.to_string().as_bytes())
+                .unwrap(),
+            StackValue::Empty => interpreter
+                .get_output()
+                .borrow_mut()
+                .write(&"Stack is empty!".as_bytes())
+                .unwrap(),
         };
     }
 }
@@ -170,10 +193,9 @@ impl Executable for FinishInstruction {
 
 impl Executable for BridgeInstruction {
     fn execute(&self, interpreter: &mut Interpreter) {
-        interpreter.pointer.current_move();
+        interpreter.get_pointer().current_move();
     }
 }
-
 
 impl Executable for HorizontalIfInstruction {
     fn execute(&self, interpreter: &mut Interpreter) {
@@ -181,10 +203,10 @@ impl Executable for HorizontalIfInstruction {
         match top {
             StackValue::Int(val) if val != 0 => {
                 pointer_operations::change_pointer_direction(interpreter, Direction::Left);
-            },
+            }
             StackValue::Char(val) if val as u8 != 0 => {
                 pointer_operations::change_pointer_direction(interpreter, Direction::Left);
-            },
+            }
             _ => {
                 pointer_operations::change_pointer_direction(interpreter, Direction::Right);
             }
@@ -192,24 +214,22 @@ impl Executable for HorizontalIfInstruction {
     }
 }
 
-
 impl Executable for VerticalIfInstruction {
     fn execute(&self, interpreter: &mut Interpreter) {
         let top = interpreter.get_stack().remove_value_from_stack();
         match top {
             StackValue::Int(val) if val != 0 => {
                 pointer_operations::change_pointer_direction(interpreter, Direction::Up);
-            },
+            }
             StackValue::Char(val) if val as u8 != 0 => {
                 pointer_operations::change_pointer_direction(interpreter, Direction::Up);
-            },
+            }
             _ => {
                 pointer_operations::change_pointer_direction(interpreter, Direction::Down);
             }
         }
     }
 }
-
 
 impl Executable for PutIntInstruction {
     fn execute(&self, interpreter: &mut Interpreter) {
@@ -261,7 +281,8 @@ impl Executable for InputIntInstruction {
         interpreter
             .get_input()
             .borrow_mut()
-            .read_line(&mut input).expect("Failed to read line");
+            .read_line(&mut input)
+            .expect("Failed to read line");
         let input = input.trim().parse::<i32>().unwrap();
         interpreter.get_stack().push(StackValue::Int(input));
     }
@@ -274,11 +295,12 @@ impl Executable for InputCharInstruction {
             .borrow_mut()
             .read_exact(&mut buf)
             .expect("Failed to read from input");
-        
-        interpreter.get_stack().push(StackValue::Char(buf[0] as char));
+
+        interpreter
+            .get_stack()
+            .push(StackValue::Char(buf[0] as char));
     }
 }
-
 
 impl Executable for PopValueInstruction {
     fn execute(&self, interpreter: &mut Interpreter) {
@@ -288,12 +310,16 @@ impl Executable for PopValueInstruction {
 impl Executable for SwapInstruction {
     fn execute(&self, interpreter: &mut Interpreter) {
         let (a, b) = interpreter.get_stack().get_two_items_from_stack();
-        interpreter.get_stack().push(convert_empty_stack_value_to_default_int(a));
-        interpreter.get_stack().push(convert_empty_stack_value_to_default_int(b));
+        interpreter
+            .get_stack()
+            .push(convert_empty_stack_value_to_default_int(a));
+        interpreter
+            .get_stack()
+            .push(convert_empty_stack_value_to_default_int(b));
     }
 }
 
-impl Executable for SwitchStringModeInstruction{
+impl Executable for SwitchStringModeInstruction {
     fn execute(&self, interpreter: &mut Interpreter) {
         let mode = interpreter.get_mode();
         match mode {
@@ -306,7 +332,3 @@ impl Executable for SwitchStringModeInstruction{
         }
     }
 }
-
-
-
-

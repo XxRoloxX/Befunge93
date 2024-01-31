@@ -1,10 +1,10 @@
 use crate::funge_space::FungeSpace;
-use crate::symbol_mapper::map_symbol_to_instruction as mapper;
 use crate::instructions::Executable;
-use std::sync::Arc;
-use crate::Interpreter;
-use crate::ReadMode;
 use crate::instructions::{PutCharInstruction, SwitchStringModeInstruction};
+use crate::interpreter::Interpreter;
+use crate::interpreter::ReadMode;
+use crate::symbol_mapper::map_symbol_to_instruction as mapper;
+use std::sync::Arc;
 
 #[derive(Debug)]
 pub struct Pointer {
@@ -35,10 +35,10 @@ impl Pointer {
     }
     pub fn move_horizontally(&mut self, steps: i32) {
         self.x = (self.x as i32 + steps) as usize;
-    } 
-    pub fn wrap_pointer(&mut self, space: &FungeSpace){
-       self.y = self.y % space.height as usize;
-       self.x = self.x % space.width as usize;
+    }
+    pub fn wrap_pointer(&mut self, space: &FungeSpace) {
+        self.y = self.y % space.height as usize;
+        self.x = self.x % space.width as usize;
     }
 
     pub fn change_direction(&mut self, direction: Direction) {
@@ -69,18 +69,20 @@ impl Pointer {
     pub fn move_right(&mut self) {
         self.move_horizontally(1);
     }
-    pub fn get_current_instruction(&self, interpreter: &Interpreter) -> Option<Arc<dyn Executable>> {
+    pub fn get_current_instruction(
+        &self,
+        interpreter: &Interpreter,
+    ) -> Option<Arc<dyn Executable>> {
+        let current_symbol = interpreter
+            .get_space()
+            .get_symbol_at(self.x as usize, self.y as usize);
 
-        let current_symbol = interpreter.get_space().get_symbol_at(self.x as usize, self.y as usize);
-
-        match interpreter.get_mode(){
+        match interpreter.get_mode() {
             ReadMode::String if (current_symbol == '"') => {
-                Some(Arc::from(SwitchStringModeInstruction{}))
-            },
-            ReadMode::String => {
-                Some(Arc::from(PutCharInstruction(current_symbol)))
-            },
-            ReadMode::Normal => {mapper(current_symbol)}
+                Some(Arc::from(SwitchStringModeInstruction {}))
+            }
+            ReadMode::String => Some(Arc::from(PutCharInstruction(current_symbol))),
+            ReadMode::Normal => mapper(current_symbol),
         }
     }
 }

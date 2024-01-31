@@ -1,8 +1,8 @@
 use befunge93::Interpreter;
-use std::fs::read_to_string;
-use std::rc::Rc;
-use std::io::{BufRead,Read, Write,};
 use std::cell::RefCell;
+use std::fs::read_to_string;
+use std::io::{BufRead, Read, Write};
+use std::rc::Rc;
 
 struct MockInput {
     input: Vec<u8>,
@@ -60,13 +60,11 @@ impl Write for MockOutput {
     }
 }
 
-
 #[test]
 fn big_factorial() {
     let funge_space = read_to_string("./tests/factorial.bf");
-    let output = MockOutput::boxed_new(); 
+    let output = MockOutput::boxed_new();
     let input = MockInput::boxed_new(vec![b'9' as u8]);
-
 
     match funge_space {
         Ok(res) => {
@@ -77,15 +75,17 @@ fn big_factorial() {
             print!("{}", err);
         }
     }
-    assert_eq!("362880", String::from_utf8(output.borrow_mut().output.clone()).unwrap());
+    assert_eq!(
+        "362880",
+        String::from_utf8(output.borrow_mut().output.clone()).unwrap()
+    );
 }
 
 #[test]
 fn small_factorial() {
     let funge_space = read_to_string("./tests/factorial.bf");
-    let output = MockOutput::boxed_new(); 
+    let output = MockOutput::boxed_new();
     let input = MockInput::boxed_new(vec![b'3' as u8]);
-
 
     match funge_space {
         Ok(res) => {
@@ -96,15 +96,17 @@ fn small_factorial() {
             print!("{}", err);
         }
     }
-    assert_eq!("6", String::from_utf8(output.borrow_mut().output.clone()).unwrap());
+    assert_eq!(
+        "6",
+        String::from_utf8(output.borrow_mut().output.clone()).unwrap()
+    );
 }
 
 #[test]
 fn hello_world_1() {
     let funge_space = read_to_string("./tests/hello_world_1.bf");
-    let output = MockOutput::boxed_new(); 
+    let output = MockOutput::boxed_new();
     let input = MockInput::boxed_new(vec![]);
-
 
     match funge_space {
         Ok(res) => {
@@ -115,5 +117,8 @@ fn hello_world_1() {
             print!("{}", err);
         }
     }
-    assert_eq!("Hello World!", String::from_utf8(output.borrow_mut().output.clone()).unwrap());
+    assert_eq!(
+        "Hello World!",
+        String::from_utf8(output.borrow_mut().output.clone()).unwrap()
+    );
 }

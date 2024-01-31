@@ -1,21 +1,19 @@
 #[derive(Debug)]
 pub struct FungeSpace {
-    pub plain: [[char; 25];80],
+    pub plain: [[char; 25]; 80],
     pub height: usize,
     pub width: usize,
 }
 
-
 fn format_string_to_matrix(plain: &str) -> [[char; 25]; 80] {
-    let mut matrix = [[' ';25];80];
-    for (row,line) in plain.lines().enumerate() {
+    let mut matrix = [[' '; 25]; 80];
+    for (row, line) in plain.lines().enumerate() {
         for (col, character) in line.chars().enumerate() {
             matrix[row][col] = character;
         }
-    };
+    }
     return matrix;
 }
-
 
 impl FungeSpace {
     pub fn new(plain: &str) -> FungeSpace {
@@ -25,7 +23,7 @@ impl FungeSpace {
         FungeSpace {
             plain: matrix,
             width,
-            height
+            height,
         }
     }
 
