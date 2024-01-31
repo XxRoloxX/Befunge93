@@ -1,11 +1,15 @@
 use crate::instructions::{
-    AddInstruction, BridgeInstruction, DivInstruction, DuplicateInstruction, Executable, FinishInstruction, HorizontalIfInstruction, InputCharInstruction, InputIntInstruction, ModInstruction, MoveDownInstruction, MoveLeftInstruction, MoveRightInstruction, MoveUpInstruction, MulInstruction, PopValueInstruction, PrintCharInstruction, PrintIntInstruction, PutCharInstruction, PutIntInstruction, SubInstruction, SwapInstruction, VerticalIfInstruction
+    AddInstruction, BridgeInstruction, DivInstruction, DuplicateInstruction, Executable, FinishInstruction, HorizontalIfInstruction, InputCharInstruction, InputIntInstruction, ModInstruction, MoveDownInstruction, MoveLeftInstruction, MoveRightInstruction, MoveUpInstruction, MulInstruction, PopValueInstruction, PrintCharInstruction, PrintIntInstruction, PutCharInstruction, PutIntInstruction, SubInstruction, SwapInstruction, VerticalIfInstruction, SwitchStringModeInstruction
 };
 use std::sync::Arc;
 use lazy_static::lazy_static;
 
-lazy_static!{
-        static ref MAPPING: Arc<[InstructionSymbolMapping]>= Arc::from([
+lazy_static!(
+    static ref MAPPING: Arc<[InstructionSymbolMapping]> = get_instruction_mapping();
+);
+
+fn get_instruction_mapping() -> Arc<[InstructionSymbolMapping]>{
+        Arc::from([
         InstructionSymbolMapping {
             instruction: Arc::from(MoveUpInstruction {}),
             symbol: '^',
@@ -86,8 +90,12 @@ lazy_static!{
             instruction: Arc::from(SwapInstruction{}),
             symbol: '\\'
         },
-    ]);
+        InstructionSymbolMapping{
+            instruction: Arc::from(SwitchStringModeInstruction{}),
+            symbol: '"'}
+        ])
 }
+
 
 pub fn map_symbol_to_instruction(symbol: char) -> Option<Arc<dyn Executable>>{
     let mapped_value = MAPPING
@@ -107,7 +115,7 @@ pub fn map_symbol_to_instruction(symbol: char) -> Option<Arc<dyn Executable>>{
     }
 
 }
-struct InstructionSymbolMapping {
+struct InstructionSymbolMapping{
     instruction: Arc<dyn Executable>,
     symbol: char,
 }

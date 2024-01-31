@@ -2,7 +2,7 @@ use crate::pointer::Direction;
 use crate::Interpreter;
 use crate::StackValue;
 use crate::Stackable;
-use std::io::Read;
+use crate::ReadMode;
 
 use self::stack_operations::convert_empty_stack_value_to_default_int;
 
@@ -45,6 +45,9 @@ mod pointer_operations {
         interpreter.pointer.change_direction(direction);
     }
 }
+
+#[derive(Debug, Clone, Copy)]
+pub struct SwitchStringModeInstruction {}
 
 #[derive(Debug, Clone, Copy)]
 pub struct AddInstruction {}
@@ -143,19 +146,19 @@ impl Executable for MulInstruction {
 impl Executable for PrintCharInstruction {
     fn execute(&self, interpreter: &mut Interpreter) {
         match interpreter.get_stack().remove_value_from_stack() {
-            StackValue::Int(val) => print!("{}", val as u8),
-            StackValue::Char(val) => print!("{}", val),
-            StackValue::Empty => print!("Stack is Empty"),
-        }
+            StackValue::Int(val) => interpreter.get_output().borrow_mut().write(&[val as u8]).unwrap(),
+            StackValue::Char(val) => interpreter.get_output().borrow_mut().write(&[val as u8]).unwrap(),
+            StackValue::Empty => interpreter.get_output().borrow_mut().write(&"Stack is empty!".as_bytes()).unwrap(),
+        };
     }
 }
 impl Executable for PrintIntInstruction {
     fn execute(&self, interpreter: &mut Interpreter) {
         match interpreter.get_stack().remove_value_from_stack() {
-            StackValue::Char(c) => print!("{}", c as u8),
-            StackValue::Int(i) => print!("{}", i),
-            StackValue::Empty => print!("Empty"),
-        }
+            StackValue::Char(c) => interpreter.get_output().borrow_mut().write(&[c as u8]).unwrap(),
+            StackValue::Int(i) => interpreter.get_output().borrow_mut().write(&i.to_string().as_bytes()).unwrap(),
+            StackValue::Empty => interpreter.get_output().borrow_mut().write(&"Stack is empty!".as_bytes()).unwrap(),
+        };
     }
 }
 
@@ -221,31 +224,31 @@ impl Executable for PutCharInstruction {
 }
 
 impl Executable for MoveUpInstruction {
-    fn execute<'a>(&self, interpreter: &'a mut Interpreter) {
+    fn execute(&self, interpreter: &mut Interpreter) {
         pointer_operations::change_pointer_direction(interpreter, Direction::Up);
     }
 }
 
 impl Executable for MoveDownInstruction {
-    fn execute<'a>(&self, interpreter: &'a mut Interpreter) {
+    fn execute(&self, interpreter: &mut Interpreter) {
         pointer_operations::change_pointer_direction(interpreter, Direction::Down);
     }
 }
 
 impl Executable for MoveRightInstruction {
-    fn execute<'a>(&self, interpreter: &'a mut Interpreter) {
+    fn execute(&self, interpreter: &mut Interpreter) {
         pointer_operations::change_pointer_direction(interpreter, Direction::Right);
     }
 }
 
 impl Executable for MoveLeftInstruction {
-    fn execute<'a>(&self, interpreter: &'a mut Interpreter) {
+    fn execute(&self, interpreter: &mut Interpreter) {
         pointer_operations::change_pointer_direction(interpreter, Direction::Left);
     }
 }
 
 impl Executable for DuplicateInstruction {
-    fn execute<'a>(&self, interpreter: &'a mut Interpreter) {
+    fn execute(&self, interpreter: &mut Interpreter) {
         let top = interpreter.get_stack().remove_value_from_stack();
         interpreter.get_stack().push(top);
         interpreter.get_stack().push(top);
@@ -253,36 +256,57 @@ impl Executable for DuplicateInstruction {
 }
 
 impl Executable for InputIntInstruction {
-    fn execute<'a>(&self, interpreter: &'a mut Interpreter) {
+    fn execute(&self, interpreter: &mut Interpreter) {
         let mut input = String::new();
-        std::io::stdin().read_line(&mut input).expect("Failed to read line");
+        interpreter
+            .get_input()
+            .borrow_mut()
+            .read_line(&mut input).expect("Failed to read line");
         let input = input.trim().parse::<i32>().unwrap();
         interpreter.get_stack().push(StackValue::Int(input));
     }
 }
 impl Executable for InputCharInstruction {
-    fn execute<'a>(&self, interpreter: &'a mut Interpreter) {
-        let input = std::io::stdin()
-            .bytes()
-            .next()
-            .and_then(|result| result.ok())
-            .map(|byte| byte as char);
-        interpreter.get_stack().push(StackValue::Char(input.unwrap()));
+    fn execute(&self, interpreter: &mut Interpreter) {
+        let mut buf = [0u8; 1];
+        interpreter
+            .get_input()
+            .borrow_mut()
+            .read_exact(&mut buf)
+            .expect("Failed to read from input");
+        
+        interpreter.get_stack().push(StackValue::Char(buf[0] as char));
     }
 }
 
 
 impl Executable for PopValueInstruction {
-    fn execute<'a>(&self, interpreter: &'a mut Interpreter) {
+    fn execute(&self, interpreter: &mut Interpreter) {
         interpreter.get_stack().remove_value_from_stack();
     }
 }
 impl Executable for SwapInstruction {
-    fn execute<'a>(&self, interpreter: &'a mut Interpreter) {
+    fn execute(&self, interpreter: &mut Interpreter) {
         let (a, b) = interpreter.get_stack().get_two_items_from_stack();
         interpreter.get_stack().push(convert_empty_stack_value_to_default_int(a));
         interpreter.get_stack().push(convert_empty_stack_value_to_default_int(b));
     }
 }
+
+impl Executable for SwitchStringModeInstruction{
+    fn execute(&self, interpreter: &mut Interpreter) {
+        let mode = interpreter.get_mode();
+        match mode {
+            ReadMode::Normal => {
+                interpreter.set_mode(ReadMode::String);
+            }
+            ReadMode::String => {
+                interpreter.set_mode(ReadMode::Normal);
+            }
+        }
+    }
+}
+
+
 
 

@@ -1,7 +1,10 @@
 use crate::funge_space::FungeSpace;
-use crate::instructions::Executable;
 use crate::symbol_mapper::map_symbol_to_instruction as mapper;
+use crate::instructions::Executable;
 use std::sync::Arc;
+use crate::Interpreter;
+use crate::ReadMode;
+use crate::instructions::{PutCharInstruction, SwitchStringModeInstruction};
 
 #[derive(Debug)]
 pub struct Pointer {
@@ -66,7 +69,18 @@ impl Pointer {
     pub fn move_right(&mut self) {
         self.move_horizontally(1);
     }
-    pub fn get_current_instruction(&self, space: &FungeSpace) -> Option<Arc<dyn Executable>> {
-        return mapper(space.get_symbol_at(self.x as usize, self.y as usize));
+    pub fn get_current_instruction(&self, interpreter: &Interpreter) -> Option<Arc<dyn Executable>> {
+
+        let current_symbol = interpreter.get_space().get_symbol_at(self.x as usize, self.y as usize);
+
+        match interpreter.get_mode(){
+            ReadMode::String if (current_symbol == '"') => {
+                Some(Arc::from(SwitchStringModeInstruction{}))
+            },
+            ReadMode::String => {
+                Some(Arc::from(PutCharInstruction(current_symbol)))
+            },
+            ReadMode::Normal => {mapper(current_symbol)}
+        }
     }
 }

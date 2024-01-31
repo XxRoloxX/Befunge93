@@ -2,14 +2,25 @@ pub mod funge_space;
 pub mod instructions;
 pub mod pointer;
 pub mod symbol_mapper;
+pub mod io;
 
-use funge_space::FungeSpace;
-use pointer::Pointer;
-pub struct Interpreter {
+
+pub use funge_space::FungeSpace;
+pub use pointer::Pointer;
+pub use io::{InterpreterInput, InterpreterOutput};
+use std::io::{stdin, stdout};
+use std::io::{BufReader, BufWriter};
+use std::rc::Rc;
+use std::cell::RefCell;
+
+pub struct Interpreter{
     space: FungeSpace,
     stack: Stack<StackValue>,
+    mode: ReadMode,
     is_running: bool,
-    pointer: Pointer
+    pointer: Pointer,
+    input: InterpreterInput,
+    output: InterpreterOutput,
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -61,14 +72,21 @@ impl Stack<StackValue> {
         (top, next_to_top)
     }
 }
+pub enum ReadMode {
+    String,
+    Normal
+}
 
 impl Interpreter {
-    pub fn new(plain: &str) -> Interpreter {
+    pub fn new(plain: &str, input: Option<InterpreterInput>, output:Option<InterpreterOutput>) -> Interpreter {
         Interpreter {
             pointer: Pointer::new(),
             space: FungeSpace::new(plain),
             stack: Stack { stack: Vec::new() },
+            mode: ReadMode::Normal,
             is_running: true,
+            input: input.unwrap_or(Rc::from(RefCell::from(BufReader::new(stdin())))),
+            output: output.unwrap_or(Rc::from(RefCell::from(BufWriter::new(stdout())))),
         }
 
     }
@@ -82,12 +100,24 @@ impl Interpreter {
     pub fn get_stack(&mut self) -> &mut Stack<StackValue> {
         &mut self.stack
     }
+    pub fn get_input(&mut self) -> &mut InterpreterInput {
+        &mut self.input
+    }
+    pub fn get_output(&mut self) -> &mut InterpreterOutput {
+        &mut self.output
+    }
+    pub fn get_mode(&self) -> &ReadMode {
+        &self.mode
+    }
+    pub fn set_mode(&mut self, mode: ReadMode) {
+        self.mode = mode;
+    }
 
     fn finish_execution(&mut self) {
         self.is_running = false;
     }
     fn execute_current_instruction(&mut self) {
-        let instruction = self.pointer.get_current_instruction(&self.space);
+        let instruction = self.pointer.get_current_instruction(self);
         if let Some(instruction) = instruction {
             instruction.execute(self);
         }
@@ -96,13 +126,17 @@ impl Interpreter {
     pub fn run(&mut self) {
         while self.is_running {
             self.execute_current_instruction();
-            // print!(
-            //         "Position: ({:?}), , Stack: {:?}\n",
-            //         self.pointer,
-            //         self.stack.stack
-            //     );
+            print!(
+                    "Position: ({:?}), , Stack: {:?}\n",
+                    self.pointer,
+                    self.stack.stack
+                );
             self.pointer.current_move();
             self.pointer.wrap_pointer(&self.space);
         }
     }
 }
+
+
+
+
