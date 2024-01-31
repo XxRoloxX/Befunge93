@@ -1,117 +1,113 @@
 use crate::instructions::{
-    AddInstruction, DivInstruction, FinishInstruction, Instruction, MoveDownInstruction,
-    MoveLeftInstruction, MoveRightInstruction, MoveUpInstruction, MulInstruction,
-    PrintCharInstruction, PrintIntInstruction, PutCharInstruction, PutIntInstruction,
-    SubInstruction, ModInstruction, HorizontalIfInstruction, VerticalIfInstruction,
-    BridgeInstruction, DuplicateInstruction , InputIntInstruction, InputCharInstruction,
-    PopValueInstruction, SwapInstruction
+    AddInstruction, BridgeInstruction, DivInstruction, DuplicateInstruction, Executable, FinishInstruction, HorizontalIfInstruction, InputCharInstruction, InputIntInstruction, ModInstruction, MoveDownInstruction, MoveLeftInstruction, MoveRightInstruction, MoveUpInstruction, MulInstruction, PopValueInstruction, PrintCharInstruction, PrintIntInstruction, PutCharInstruction, PutIntInstruction, SubInstruction, SwapInstruction, VerticalIfInstruction
 };
+use std::sync::Arc;
+use lazy_static::lazy_static;
 
-pub fn map_symbol_to_instruction(symbol: char) -> Option<Instruction> {
-
-    let mapping = vec![
+lazy_static!{
+        static ref MAPPING: Arc<[InstructionSymbolMapping]>= Arc::from([
         InstructionSymbolMapping {
-            instruction: Instruction::MoveUp(MoveUpInstruction {}),
+            instruction: Arc::from(MoveUpInstruction {}),
             symbol: '^',
         },
         InstructionSymbolMapping {
-            instruction: Instruction::MoveDown(MoveDownInstruction {}),
+            instruction: Arc::from(MoveDownInstruction {}),
             symbol: 'v',
         },
         InstructionSymbolMapping {
-            instruction: Instruction::MoveLeft(MoveLeftInstruction {}),
+            instruction: Arc::from(MoveLeftInstruction {}),
             symbol: '<',
         },
         InstructionSymbolMapping {
-            instruction: Instruction::MoveRight(MoveRightInstruction {}),
+            instruction: Arc::from(MoveRightInstruction {}),
             symbol: '>',
         },
         InstructionSymbolMapping {
-            instruction: Instruction::Add(AddInstruction {}),
+            instruction: Arc::from(AddInstruction {}),
             symbol: '+',
         },
         InstructionSymbolMapping {
-            instruction: Instruction::Sub(SubInstruction {}),
+            instruction: Arc::from(SubInstruction {}),
             symbol: '-',
         },
         InstructionSymbolMapping {
-            instruction: Instruction::Mul(MulInstruction {}),
+            instruction: Arc::from(MulInstruction {}),
             symbol: '*',
         },
         InstructionSymbolMapping {
-            instruction: Instruction::Div(DivInstruction {}),
+            instruction: Arc::from(DivInstruction {}),
             symbol: '/',
         },
         InstructionSymbolMapping {
-            instruction: Instruction::PrintInt(PrintIntInstruction {}),
+            instruction: Arc::from(PrintIntInstruction {}),
             symbol: '.',
         },
         InstructionSymbolMapping {
-            instruction: Instruction::PrintChar(PrintCharInstruction {}),
+            instruction: Arc::from(PrintCharInstruction {}),
             symbol: ',',
         },
         InstructionSymbolMapping {
-            instruction: Instruction::Finish(FinishInstruction {}),
+            instruction: Arc::from(FinishInstruction {}),
             symbol: '@',
         },
         InstructionSymbolMapping{
-            instruction: Instruction::Mod(ModInstruction{}),
+            instruction: Arc::from(ModInstruction{}),
             symbol: '%'
         },
         InstructionSymbolMapping{
-            instruction: Instruction::HorizontalIf(HorizontalIfInstruction{}),
+            instruction: Arc::from(HorizontalIfInstruction{}),
             symbol: '_'
         },
         InstructionSymbolMapping{
-            instruction: Instruction::VerticalIf(VerticalIfInstruction{}),
+            instruction: Arc::from(VerticalIfInstruction{}),
             symbol: '|'
         },
         InstructionSymbolMapping{
-            instruction: Instruction::Bridge(BridgeInstruction{}),
+            instruction: Arc::from(BridgeInstruction{}),
             symbol: '#'
         },
         InstructionSymbolMapping{
-            instruction: Instruction::Duplicate(DuplicateInstruction{}),
+            instruction: Arc::from(DuplicateInstruction{}),
             symbol: ':'
         },
         InstructionSymbolMapping{
-            instruction: Instruction::InputInt(InputIntInstruction{}),
+            instruction: Arc::from(InputIntInstruction{}),
             symbol: '&'
         },
         InstructionSymbolMapping{
-            instruction: Instruction::InputChar(InputCharInstruction{}),
+            instruction: Arc::from(InputCharInstruction{}),
             symbol: '~'
         },
         InstructionSymbolMapping{
-            instruction: Instruction::PopValue(PopValueInstruction{}),
+            instruction: Arc::from(PopValueInstruction{}),
             symbol: '$'
         },
         InstructionSymbolMapping{
-            instruction: Instruction::Swap(SwapInstruction{}),
+            instruction: Arc::from(SwapInstruction{}),
             symbol: '\\'
         },
-        
-    ];
+    ]);
+}
 
-    let mapped_value = mapping
+pub fn map_symbol_to_instruction(symbol: char) -> Option<Arc<dyn Executable>>{
+    let mapped_value = MAPPING
         .iter()
-        .find(move |mapping| mapping.symbol == symbol)
-        .map(|mapping| mapping.instruction);
+        .find(|mapping| mapping.symbol == symbol)
+        .map(|mapping| mapping.instruction.clone());
 
     if mapped_value.is_some(){
         return mapped_value;
     }else if let Some(a) = symbol.to_digit(10) {
-        return Some(Instruction::PutInt(PutIntInstruction(a as i32)));
+        return Some(Arc::from(PutIntInstruction(a as i32)));
     }
     else if symbol.is_alphabetic(){
-        return Some(Instruction::PutChar(PutCharInstruction(symbol)));
+        return Some(Arc::from(PutCharInstruction(symbol)));
     }else{
         return None
     }
 
 }
-
 struct InstructionSymbolMapping {
-    instruction: Instruction,
+    instruction: Arc<dyn Executable>,
     symbol: char,
 }

@@ -6,62 +6,7 @@ use std::io::Read;
 
 use self::stack_operations::convert_empty_stack_value_to_default_int;
 
-#[derive(Debug, Clone, Copy)]
-pub enum Instruction {
-    MoveUp(MoveUpInstruction),
-    PutInt(PutIntInstruction),
-    PutChar(PutCharInstruction),
-    MoveDown(MoveDownInstruction),
-    MoveLeft(MoveLeftInstruction),
-    MoveRight(MoveRightInstruction),
-    Add(AddInstruction),
-    Sub(SubInstruction),
-    Mul(MulInstruction),
-    Div(DivInstruction),
-    PrintChar(PrintCharInstruction),
-    PrintInt(PrintIntInstruction),
-    Finish(FinishInstruction),
-    Mod(ModInstruction),
-    HorizontalIf(HorizontalIfInstruction),
-    VerticalIf(VerticalIfInstruction),
-    Bridge(BridgeInstruction),
-    Duplicate(DuplicateInstruction),
-    InputInt(InputIntInstruction),
-    InputChar(InputCharInstruction),
-    PopValue(PopValueInstruction),
-    Swap(SwapInstruction),
-}
-
-impl Instruction {
-    pub fn execute<'a>(&self, interpreter: &'a mut Interpreter) {
-        match self {
-            Instruction::MoveUp(i) => i.execute(interpreter),
-            Instruction::MoveDown(i) => i.execute(interpreter),
-            Instruction::MoveLeft(i) => i.execute(interpreter),
-            Instruction::MoveRight(i) => i.execute(interpreter),
-            Instruction::Add(i) => i.execute(interpreter),
-            Instruction::Sub(i) => i.execute(interpreter),
-            Instruction::Mul(i) => i.execute(interpreter),
-            Instruction::Div(i) => i.execute(interpreter),
-            Instruction::PrintChar(i) => i.execute(interpreter),
-            Instruction::PrintInt(i) => i.execute(interpreter),
-            Instruction::Finish(i) => i.execute(interpreter),
-            Instruction::PutChar(i) => i.execute(interpreter),
-            Instruction::PutInt(i) => i.execute(interpreter),
-            Instruction::Mod(i) => i.execute(interpreter),
-            Instruction::HorizontalIf(i) => i.execute(interpreter),
-            Instruction::VerticalIf(i) => i.execute(interpreter),
-            Instruction::Bridge(i) => i.execute(interpreter),
-            Instruction::Duplicate(i) => i.execute(interpreter),
-            Instruction::InputInt(i) => i.execute(interpreter),
-            Instruction::InputChar(i) => i.execute(interpreter),
-            Instruction::Swap(i)=>i.execute(interpreter),
-            Instruction::PopValue(i)=>i.execute(interpreter)
-        }
-    }
-}
-
-pub trait Executable {
+pub trait Executable: Sync +Send + 'static {
     fn execute(&self, interpreter: &mut Interpreter);
 }
 

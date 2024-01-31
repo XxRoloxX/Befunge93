@@ -1,6 +1,7 @@
 use crate::funge_space::FungeSpace;
-use crate::instructions::Instruction;
+use crate::instructions::Executable;
 use crate::symbol_mapper::map_symbol_to_instruction as mapper;
+use std::sync::Arc;
 
 #[derive(Debug)]
 pub struct Pointer {
@@ -65,7 +66,7 @@ impl Pointer {
     pub fn move_right(&mut self) {
         self.move_horizontally(1);
     }
-    pub fn get_current_instruction(&self, space: &FungeSpace) -> Option<Instruction> {
+    pub fn get_current_instruction(&self, space: &FungeSpace) -> Option<Arc<dyn Executable>> {
         return mapper(space.get_symbol_at(self.x as usize, self.y as usize));
     }
 }
