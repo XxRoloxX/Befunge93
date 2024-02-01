@@ -11,7 +11,7 @@ use std::sync::Arc;
 
 lazy_static! {
     static ref MAPPING: Arc<[InstructionSymbolMapping]> = get_instruction_mapping();
-};
+}
 
 fn get_instruction_mapping() -> Arc<[InstructionSymbolMapping]> {
     Arc::from([

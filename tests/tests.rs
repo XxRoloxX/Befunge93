@@ -26,6 +26,9 @@ impl MockOutput {
     fn boxed_new() -> Rc<RefCell<Self>> {
         Rc::new(RefCell::new(MockOutput::new()))
     }
+    fn get_stringified_output(&self) -> String {
+        String::from_utf8(self.output.clone()).unwrap()
+    }
 }
 impl Read for MockInput {
     fn read(&mut self, buf: &mut [u8]) -> std::io::Result<usize> {
@@ -77,7 +80,7 @@ fn big_factorial() {
     }
     assert_eq!(
         "362880",
-        String::from_utf8(output.borrow_mut().output.clone()).unwrap()
+        output.borrow_mut().get_stringified_output()
     );
 }
 
@@ -98,7 +101,7 @@ fn small_factorial() {
     }
     assert_eq!(
         "6",
-        String::from_utf8(output.borrow_mut().output.clone()).unwrap()
+        output.borrow_mut().get_stringified_output()
     );
 }
 
@@ -119,6 +122,6 @@ fn hello_world_1() {
     }
     assert_eq!(
         "Hello World!",
-        String::from_utf8(output.borrow_mut().output.clone()).unwrap()
+        output.borrow_mut().get_stringified_output() 
     );
 }
