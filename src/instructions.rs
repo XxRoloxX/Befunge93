@@ -4,6 +4,7 @@ use crate::ReadMode;
 use crate::StackValue;
 use crate::Stackable;
 
+use self::stack_operations::binary_arithmetic_operation_on_stack;
 use self::stack_operations::convert_empty_stack_value_to_default_int;
 
 pub trait Executable: Sync + Send + 'static {
@@ -114,6 +115,10 @@ pub struct PopValueInstruction {}
 
 #[derive(Debug, Clone, Copy)]
 pub struct SwapInstruction {}
+
+#[derive(Debug, Clone, Copy)]
+pub struct ComparisonInstruction {}
+
 
 impl Executable for AddInstruction {
     fn execute(&self, interpreter: &mut Interpreter) {
@@ -330,5 +335,13 @@ impl Executable for SwitchStringModeInstruction {
                 interpreter.set_mode(ReadMode::Normal);
             }
         }
+    }
+}
+
+impl Executable for ComparisonInstruction {
+    fn execute(&self, interpreter: &mut Interpreter) {
+       let comp = |a,b| {if a>b {1} else {0}};
+
+        stack_operations::binary_arithmetic_operation_on_stack(interpreter, comp)        
     }
 }
