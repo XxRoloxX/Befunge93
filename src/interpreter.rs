@@ -35,7 +35,10 @@ impl Interpreter {
         }
     }
 
-    pub fn get_space(&self) -> &FungeSpace {
+    pub fn get_space(&mut self) -> &mut FungeSpace {
+        &mut self.space
+    }
+    pub fn get_immutable_space(&self)->&FungeSpace {
         &self.space
     }
     pub fn get_pointer(&mut self) -> &mut Pointer {

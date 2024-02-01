@@ -33,4 +33,8 @@ impl FungeSpace {
     pub fn get_symbol_at(&self, x: usize, y: usize) -> char {
         self.plain[y][x]
     }
+    pub fn set_symbol_at(&mut self, x:usize, y:usize, symbol:char){
+        self.plain[y][x] = symbol
+
+    }
 }

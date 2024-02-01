@@ -1,3 +1,4 @@
+use crate::interpreter;
 use crate::pointer::Direction;
 use crate::Interpreter;
 use crate::ReadMode;
@@ -119,6 +120,11 @@ pub struct SwapInstruction {}
 #[derive(Debug, Clone, Copy)]
 pub struct ComparisonInstruction {}
 
+#[derive(Debug, Clone, Copy)]
+pub struct GetSymbolFromSpaceInstruction{}
+
+#[derive(Debug, Clone, Copy)]
+pub struct PutSymbolInSpaceInstruction{}
 
 impl Executable for AddInstruction {
     fn execute(&self, interpreter: &mut Interpreter) {
@@ -340,8 +346,32 @@ impl Executable for SwitchStringModeInstruction {
 
 impl Executable for ComparisonInstruction {
     fn execute(&self, interpreter: &mut Interpreter) {
-       let comp = |a,b| {if a>b {1} else {0}};
+       let comp = |a,b| {if a>b {0} else {1}};
 
         stack_operations::binary_arithmetic_operation_on_stack(interpreter, comp)        
+    }
+}
+
+impl Executable for PutSymbolInSpaceInstruction{
+    fn execute(&self, interpreter: &mut Interpreter) {
+        let (y,x) = interpreter.get_stack().get_two_items_from_stack();
+        let symbol = interpreter.get_stack().pop();
+        let space = interpreter.get_space();
+        if let (StackValue::Int(y), StackValue::Int(x), Some(StackValue::Char(symbol))) = (y,x, symbol){
+            space.set_symbol_at(x as usize, y as usize, symbol);
+        }
+
+    }
+}
+
+impl Executable for GetSymbolFromSpaceInstruction{
+    fn execute(&self, interpreter: &mut Interpreter) {
+        let (y,x) = interpreter.get_stack().get_two_items_from_stack();
+        let space = interpreter.get_space();
+        if let (StackValue::Int(y), StackValue::Int(x)) = (y,x){
+            let symbol = space.get_symbol_at(x as usize, y as usize);
+            space.set_symbol_at(x as usize, y as usize, symbol);
+        }
+
     }
 }

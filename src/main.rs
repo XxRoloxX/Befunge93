@@ -2,7 +2,7 @@ use befunge93::Interpreter;
 use std::fs::read_to_string;
 
 fn main() {
-    let funge_space = read_to_string("./src/factorial.bf");
+    let funge_space = read_to_string("./tests/comparison_1.bf");
 
     match funge_space {
         Ok(res) => {

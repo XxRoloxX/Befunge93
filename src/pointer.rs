@@ -76,7 +76,7 @@ impl Pointer {
         // self.wrap_pointer(&interpreter.get_space());
 
         let current_symbol = interpreter
-            .get_space()
+            .get_immutable_space()
             .get_symbol_at(self.x as usize, self.y as usize);
 
         match interpreter.get_mode() {

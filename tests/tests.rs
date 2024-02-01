@@ -47,3 +47,13 @@ fn hello_world_2() {
 fn hello_world_3() {
     generic_test(vec![], "Hello World!", "./tests/hello_world_3.bf");
 }
+
+#[test]
+fn comparison_1() {
+    generic_test(vec![], "1", "./tests/comparison_1.bf");
+}
+
+#[test]
+fn comparison_2() {
+    generic_test(vec![], "0", "./tests/comparison_2.bf");
+}
