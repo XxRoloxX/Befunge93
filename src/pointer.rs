@@ -73,6 +73,8 @@ impl Pointer {
         &self,
         interpreter: &Interpreter,
     ) -> Option<Arc<dyn Executable>> {
+        // self.wrap_pointer(&interpreter.get_space());
+
         let current_symbol = interpreter
             .get_space()
             .get_symbol_at(self.x as usize, self.y as usize);

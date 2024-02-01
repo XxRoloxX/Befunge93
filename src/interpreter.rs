@@ -62,6 +62,7 @@ impl Interpreter {
     }
     pub fn execute_current_instruction(&mut self) {
         let instruction = self.pointer.get_current_instruction(self);
+
         if let Some(instruction) = instruction {
             instruction.execute(self);
         }
@@ -69,13 +70,13 @@ impl Interpreter {
 
     pub fn run(&mut self) {
         while self.is_running {
+            self.pointer.wrap_pointer(&self.space);
             self.execute_current_instruction();
             print!(
                 "Position: ({:?}), , Stack: {:?}\n",
                 self.pointer, self.stack
             );
             self.pointer.current_move();
-            self.pointer.wrap_pointer(&self.space);
         }
     }
 }

@@ -1,12 +1,15 @@
+const FUNGE_SPACE_WIDTH: usize = 80;
+const FUNGE_SPACE_HEIGHT: usize = 25;
+
 #[derive(Debug)]
 pub struct FungeSpace {
-    pub plain: [[char; 25]; 80],
+    pub plain: [[char; FUNGE_SPACE_WIDTH]; FUNGE_SPACE_HEIGHT],
     pub height: usize,
     pub width: usize,
 }
 
-fn format_string_to_matrix(plain: &str) -> [[char; 25]; 80] {
-    let mut matrix = [[' '; 25]; 80];
+fn format_string_to_matrix(plain: &str) -> [[char; FUNGE_SPACE_WIDTH]; FUNGE_SPACE_HEIGHT] {
+    let mut matrix = [[' '; FUNGE_SPACE_WIDTH]; FUNGE_SPACE_HEIGHT];
     for (row, line) in plain.lines().enumerate() {
         for (col, character) in line.chars().enumerate() {
             matrix[row][col] = character;
@@ -18,8 +21,8 @@ fn format_string_to_matrix(plain: &str) -> [[char; 25]; 80] {
 impl FungeSpace {
     pub fn new(plain: &str) -> FungeSpace {
         let matrix = format_string_to_matrix(plain);
-        let width = 25;
-        let height = 80;
+        let width = FUNGE_SPACE_WIDTH;
+        let height = FUNGE_SPACE_HEIGHT;
         FungeSpace {
             plain: matrix,
             width,
