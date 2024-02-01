@@ -31,8 +31,12 @@ impl MockOutput {
 impl Read for MockInput {
     fn read(&mut self, buf: &mut [u8]) -> std::io::Result<usize> {
         let mut i = 0;
-        for byte in self.input.iter() {
-            buf[i] = *byte;
+
+        for byte in buf.iter_mut() {
+            if self.input.len() == 0 {
+                break;
+            }
+            *byte = self.input.remove(0);
             i += 1;
         }
         Ok(i)

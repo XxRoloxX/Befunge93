@@ -1,5 +1,5 @@
 use crate::instructions::{
-    AddInstruction, BridgeInstruction, ComparisonInstruction, DivInstruction, DuplicateInstruction, Executable, FinishInstruction, GetSymbolFromSpaceInstruction, HorizontalIfInstruction, InputCharInstruction, InputIntInstruction, ModInstruction, MoveDownInstruction, MoveLeftInstruction, MoveRightInstruction, MoveUpInstruction, MulInstruction, PopValueInstruction, PrintCharInstruction, PrintIntInstruction, PutCharInstruction, PutIntInstruction, PutSymbolInSpaceInstruction, SubInstruction, SwapInstruction, SwitchStringModeInstruction, VerticalIfInstruction
+    AddInstruction, BridgeInstruction, ComparisonInstruction, DivInstruction, DuplicateInstruction, Executable, FinishInstruction, GetSymbolFromSpaceInstruction, HorizontalIfInstruction, InputCharInstruction, InputIntInstruction, ModInstruction, MoveDownInstruction, MoveLeftInstruction, MoveRightInstruction, MoveUpInstruction, MulInstruction, NegationInstruction, PopValueInstruction, PrintCharInstruction, PrintIntInstruction, PutCharInstruction, PutIntInstruction, PutSymbolInSpaceInstruction, RandomDirectionInstruction, SubInstruction, SwapInstruction, SwitchStringModeInstruction, VerticalIfInstruction
 };
 use lazy_static::lazy_static;
 use std::sync::Arc;
@@ -25,6 +25,10 @@ fn get_instruction_mapping() -> Arc<[InstructionSymbolMapping]> {
         InstructionSymbolMapping {
             instruction: Arc::from(MoveRightInstruction {}),
             symbol: '>',
+        },
+        InstructionSymbolMapping {
+            instruction: Arc::from(NegationInstruction {}),
+            symbol: '!',
         },
         InstructionSymbolMapping {
             instruction: Arc::from(AddInstruction {}),
@@ -106,6 +110,10 @@ fn get_instruction_mapping() -> Arc<[InstructionSymbolMapping]> {
             instruction: Arc::from(GetSymbolFromSpaceInstruction {}),
             symbol: 'g',
         },
+        InstructionSymbolMapping{
+            instruction: Arc::from(RandomDirectionInstruction{}),
+            symbol: '?'
+        }
     ])
 }
 

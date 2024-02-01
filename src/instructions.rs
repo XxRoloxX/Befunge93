@@ -1,12 +1,9 @@
-use crate::interpreter;
+use self::stack_operations::convert_empty_stack_value_to_default_int;
 use crate::pointer::Direction;
 use crate::Interpreter;
 use crate::ReadMode;
 use crate::StackValue;
 use crate::Stackable;
-
-use self::stack_operations::binary_arithmetic_operation_on_stack;
-use self::stack_operations::convert_empty_stack_value_to_default_int;
 
 pub trait Executable: Sync + Send + 'static {
     fn execute(&self, interpreter: &mut Interpreter);
@@ -121,10 +118,16 @@ pub struct SwapInstruction {}
 pub struct ComparisonInstruction {}
 
 #[derive(Debug, Clone, Copy)]
-pub struct GetSymbolFromSpaceInstruction{}
+pub struct GetSymbolFromSpaceInstruction {}
 
 #[derive(Debug, Clone, Copy)]
-pub struct PutSymbolInSpaceInstruction{}
+pub struct PutSymbolInSpaceInstruction {}
+
+#[derive(Debug, Clone, Copy)]
+pub struct NegationInstruction {}
+
+#[derive(Debug, Clone, Copy)]
+pub struct RandomDirectionInstruction {}
 
 impl Executable for AddInstruction {
     fn execute(&self, interpreter: &mut Interpreter) {
@@ -134,7 +137,7 @@ impl Executable for AddInstruction {
 
 impl Executable for ModInstruction {
     fn execute(&self, interpreter: &mut Interpreter) {
-        stack_operations::binary_arithmetic_operation_on_stack(interpreter, |a, b| a % b);
+        stack_operations::binary_arithmetic_operation_on_stack(interpreter, |a, b| b % a);
     }
 }
 
@@ -145,7 +148,7 @@ impl Executable for SubInstruction {
 }
 impl Executable for DivInstruction {
     fn execute(&self, interpreter: &mut Interpreter) {
-        stack_operations::binary_arithmetic_operation_on_stack(interpreter, |a, b| a / b);
+        stack_operations::binary_arithmetic_operation_on_stack(interpreter, |a, b| b / a);
     }
 }
 impl Executable for MulInstruction {
@@ -301,6 +304,7 @@ impl Executable for InputIntInstruction {
 impl Executable for InputCharInstruction {
     fn execute(&self, interpreter: &mut Interpreter) {
         let mut buf = [0u8; 1];
+
         interpreter
             .get_input()
             .borrow_mut()
@@ -346,32 +350,61 @@ impl Executable for SwitchStringModeInstruction {
 
 impl Executable for ComparisonInstruction {
     fn execute(&self, interpreter: &mut Interpreter) {
-       let comp = |a,b| {if a>b {0} else {1}};
+        let comp = |a, b| {
+            if a > b {
+                0
+            } else {
+                1
+            }
+        };
 
-        stack_operations::binary_arithmetic_operation_on_stack(interpreter, comp)        
+        stack_operations::binary_arithmetic_operation_on_stack(interpreter, comp)
     }
 }
 
-impl Executable for PutSymbolInSpaceInstruction{
+impl Executable for PutSymbolInSpaceInstruction {
     fn execute(&self, interpreter: &mut Interpreter) {
-        let (y,x) = interpreter.get_stack().get_two_items_from_stack();
-        let symbol = interpreter.get_stack().pop();
+        let (y, x) = interpreter.get_stack().get_two_items_from_stack();
+        let symbol = interpreter.get_stack().remove_value_from_stack();
         let space = interpreter.get_space();
-        if let (StackValue::Int(y), StackValue::Int(x), Some(StackValue::Char(symbol))) = (y,x, symbol){
-            space.set_symbol_at(x as usize, y as usize, symbol);
+        match symbol {
+            StackValue::Int(a) => space.set_symbol_at(x.to_usize(), y.to_usize(), a as u8 as char),
+            StackValue::Char(b) => space.set_symbol_at(x.to_usize(), y.to_usize(), b),
+            StackValue::Empty => space.set_symbol_at(x.to_usize(), y.to_usize(), ' '),
         }
-
     }
 }
 
-impl Executable for GetSymbolFromSpaceInstruction{
+impl Executable for GetSymbolFromSpaceInstruction {
     fn execute(&self, interpreter: &mut Interpreter) {
-        let (y,x) = interpreter.get_stack().get_two_items_from_stack();
+        let (y, x) = interpreter.get_stack().get_two_items_from_stack();
         let space = interpreter.get_space();
-        if let (StackValue::Int(y), StackValue::Int(x)) = (y,x){
+        if let (StackValue::Int(y), StackValue::Int(x)) = (y, x) {
             let symbol = space.get_symbol_at(x as usize, y as usize);
-            space.set_symbol_at(x as usize, y as usize, symbol);
+            interpreter.get_stack().push(StackValue::Char(symbol));
         }
-
+    }
+}
+impl Executable for NegationInstruction {
+    fn execute(&self, interpreter: &mut Interpreter) {
+        let top = interpreter.get_stack().remove_value_from_stack();
+        match top.to_usize() {
+            0 => interpreter.get_stack().push(StackValue::Int(1)),
+            _ => interpreter.get_stack().push(StackValue::Int(0)),
+        }
+    }
+}
+impl Executable for RandomDirectionInstruction {
+    fn execute(&self, interpreter: &mut Interpreter) {
+        use rand::Rng;
+        let mut rng = rand::thread_rng();
+        let random_number = rng.gen_range(0..4);
+        match random_number {
+            0 => pointer_operations::change_pointer_direction(interpreter, Direction::Up),
+            1 => pointer_operations::change_pointer_direction(interpreter, Direction::Down),
+            2 => pointer_operations::change_pointer_direction(interpreter, Direction::Left),
+            3 => pointer_operations::change_pointer_direction(interpreter, Direction::Right),
+            _ => panic!("Random number generator is broken!"),
+        }
     }
 }

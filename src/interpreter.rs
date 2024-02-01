@@ -75,10 +75,10 @@ impl Interpreter {
         while self.is_running {
             self.pointer.wrap_pointer(&self.space);
             self.execute_current_instruction();
-            print!(
-                "Position: ({:?}), , Stack: {:?}\n",
-                self.pointer, self.stack
-            );
+            // print!(
+            //     "Position: ({:?}), , Stack: {:?}\n",
+            //     self.pointer, self.stack
+            // );
             self.pointer.current_move();
         }
     }

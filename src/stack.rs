@@ -12,6 +12,13 @@ impl StackValue {
             _ => false,
         }
     }
+    pub fn to_usize(&self)->usize {
+        match self {
+            StackValue::Int(a)=> *a as usize,
+            StackValue::Char(b)=>*b as usize,
+            StackValue::Empty => 0
+        }     
+    }
 }
 
 #[derive(Debug)]
@@ -43,6 +50,7 @@ impl Stack<StackValue> {
             None => StackValue::Empty,
         }
     }
+    
     pub fn get_two_items_from_stack(&mut self) -> (StackValue, StackValue) {
         let top = self.remove_value_from_stack();
         let next_to_top = self.remove_value_from_stack();

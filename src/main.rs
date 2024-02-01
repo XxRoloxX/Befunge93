@@ -1,8 +1,11 @@
 use befunge93::Interpreter;
 use std::fs::read_to_string;
+use befunge93::cli::Cli;
+use clap::Parser;
 
 fn main() {
-    let funge_space = read_to_string("./tests/comparison_1.bf");
+    let args = Cli::parse();
+    let funge_space = read_to_string(&args.path);
 
     match funge_space {
         Ok(res) => {

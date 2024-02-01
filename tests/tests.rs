@@ -57,3 +57,17 @@ fn comparison_1() {
 fn comparison_2() {
     generic_test(vec![], "0", "./tests/comparison_2.bf");
 }
+#[test]
+fn self_modification_1(){
+    generic_test(vec![], "x", "./tests/self_modification_1.bf")
+}
+
+#[test]
+fn self_modification_2(){
+    generic_test(vec![], "", "./tests/self_modification_2.bf")
+}
+// #[test]
+// fn calc_1(){
+//     generic_test(vec![2, 5, b'+',b'.'], "7", "./tests/calc.bf")
+// }
+
