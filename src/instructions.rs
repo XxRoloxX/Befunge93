@@ -16,13 +16,12 @@ mod stack_operations {
         match value {
             StackValue::Empty => StackValue::Int(0),
             StackValue::Int(a) => StackValue::Int(a),
-            StackValue::Char(a) => StackValue::Int(a as i32),
         }
     }
 
     pub fn binary_arithmetic_operation_on_stack<F>(interpreter: &mut Interpreter, operation: F)
     where
-        F: Fn(i32, i32) -> i32,
+        F: Fn(i64, i64) -> i64,
     {
         let (mut a, mut b) = interpreter.get_stack().get_two_items_from_stack();
         a = convert_empty_stack_value_to_default_int(a);
@@ -164,11 +163,6 @@ impl Executable for PrintCharInstruction {
                 .borrow_mut()
                 .write(&[val as u8])
                 .unwrap(),
-            StackValue::Char(val) => interpreter
-                .get_output()
-                .borrow_mut()
-                .write(&[val as u8])
-                .unwrap(),
             StackValue::Empty => interpreter
                 .get_output()
                 .borrow_mut()
@@ -180,11 +174,6 @@ impl Executable for PrintCharInstruction {
 impl Executable for PrintIntInstruction {
     fn execute(&self, interpreter: &mut Interpreter) {
         match interpreter.get_stack().remove_value_from_stack() {
-            StackValue::Char(c) => interpreter
-                .get_output()
-                .borrow_mut()
-                .write(&[c as u8])
-                .unwrap(),
             StackValue::Int(i) => interpreter
                 .get_output()
                 .borrow_mut()
@@ -218,9 +207,6 @@ impl Executable for HorizontalIfInstruction {
             StackValue::Int(val) if val != 0 => {
                 pointer_operations::change_pointer_direction(interpreter, Direction::Left);
             }
-            StackValue::Char(val) if val as u8 != 0 => {
-                pointer_operations::change_pointer_direction(interpreter, Direction::Left);
-            }
             _ => {
                 pointer_operations::change_pointer_direction(interpreter, Direction::Right);
             }
@@ -235,9 +221,6 @@ impl Executable for VerticalIfInstruction {
             StackValue::Int(val) if val != 0 => {
                 pointer_operations::change_pointer_direction(interpreter, Direction::Up);
             }
-            StackValue::Char(val) if val as u8 != 0 => {
-                pointer_operations::change_pointer_direction(interpreter, Direction::Up);
-            }
             _ => {
                 pointer_operations::change_pointer_direction(interpreter, Direction::Down);
             }
@@ -247,13 +230,13 @@ impl Executable for VerticalIfInstruction {
 
 impl Executable for PutIntInstruction {
     fn execute(&self, interpreter: &mut Interpreter) {
-        interpreter.get_stack().push(StackValue::Int(self.0))
+        interpreter.get_stack().push(StackValue::Int(self.0 as i64))
     }
 }
 
 impl Executable for PutCharInstruction {
     fn execute(&self, interpreter: &mut Interpreter) {
-        interpreter.get_stack().push(StackValue::Char(self.0))
+        interpreter.get_stack().push(StackValue::Int(self.0 as i64))
     }
 }
 
@@ -297,7 +280,7 @@ impl Executable for InputIntInstruction {
             .borrow_mut()
             .read_line(&mut input)
             .expect("Failed to read line");
-        let input = input.trim().parse::<i32>().unwrap();
+        let input = input.trim().parse::<i64>().unwrap();
         interpreter.get_stack().push(StackValue::Int(input));
     }
 }
@@ -313,7 +296,7 @@ impl Executable for InputCharInstruction {
 
         interpreter
             .get_stack()
-            .push(StackValue::Char(buf[0] as char));
+            .push(StackValue::Int(buf[0] as i64));
     }
 }
 
@@ -369,7 +352,6 @@ impl Executable for PutSymbolInSpaceInstruction {
         let space = interpreter.get_space();
         match symbol {
             StackValue::Int(a) => space.set_symbol_at(x.to_usize(), y.to_usize(), a as u8 as char),
-            StackValue::Char(b) => space.set_symbol_at(x.to_usize(), y.to_usize(), b),
             StackValue::Empty => space.set_symbol_at(x.to_usize(), y.to_usize(), ' '),
         }
     }
@@ -381,7 +363,7 @@ impl Executable for GetSymbolFromSpaceInstruction {
         let space = interpreter.get_space();
         if let (StackValue::Int(y), StackValue::Int(x)) = (y, x) {
             let symbol = space.get_symbol_at(x as usize, y as usize);
-            interpreter.get_stack().push(StackValue::Char(symbol));
+            interpreter.get_stack().push(StackValue::Int(symbol as i64));
         }
     }
 }

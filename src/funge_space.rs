@@ -1,5 +1,5 @@
-const FUNGE_SPACE_WIDTH: usize = 1000; // By definition, the maximum size of a funge space is 80x25
-const FUNGE_SPACE_HEIGHT: usize = 100;
+const FUNGE_SPACE_WIDTH: usize = 80; // By definition, the maximum size of a funge space is 80x25
+const FUNGE_SPACE_HEIGHT: usize = 25;
 
 #[derive(Debug)]
 pub struct FungeSpace {

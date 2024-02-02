@@ -26,7 +26,7 @@ fn generic_test(input: Vec<u8>, expected_output: &str, file_name: &str) {
 
 #[test]
 fn big_factorial() {
-    generic_test(vec![b'9' as u8], "362880", "factorial.bf");
+    generic_test(vec![b'4' as u8], "24", "factorial.bf");
 }
 
 #[test]

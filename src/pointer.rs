@@ -8,8 +8,8 @@ use std::sync::Arc;
 
 #[derive(Debug)]
 pub struct Pointer {
-    x: usize,
-    y: usize,
+    x: i32,
+    y: i32,
     direction: Direction,
 }
 
@@ -31,14 +31,14 @@ impl Pointer {
     }
 
     pub fn move_vertically(&mut self, steps: i32) {
-        self.y = (self.y as i32 + steps) as usize;
+        self.y = self.y + steps;
     }
     pub fn move_horizontally(&mut self, steps: i32) {
-        self.x = (self.x as i32 + steps) as usize;
+        self.x = self.x + steps;
     }
     pub fn wrap_pointer(&mut self, space: &FungeSpace) {
-        self.y = self.y % space.height as usize;
-        self.x = self.x % space.width as usize;
+        self.y = self.y.rem_euclid(space.height as i32);
+        self.x = self.x.rem_euclid(space.width as i32); 
     }
 
     pub fn change_direction(&mut self, direction: Direction) {

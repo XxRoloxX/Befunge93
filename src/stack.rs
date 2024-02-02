@@ -1,7 +1,6 @@
 #[derive(Debug, Clone, Copy)]
 pub enum StackValue {
-    Int(i32),
-    Char(char),
+    Int(i64),
     Empty,
 }
 
@@ -15,7 +14,6 @@ impl StackValue {
     pub fn to_usize(&self)->usize {
         match self {
             StackValue::Int(a)=> *a as usize,
-            StackValue::Char(b)=>*b as usize,
             StackValue::Empty => 0
         }     
     }
