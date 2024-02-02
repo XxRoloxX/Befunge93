@@ -71,4 +71,8 @@ fn self_modification_2(){
 // fn calc_1(){
 //     generic_test(vec![2, 5, b'+',b'.'], "7", "./tests/calc.bf")
 // }
+#[test]
+fn sieve_of_eratosthenes(){
+    generic_test(vec![], "23571113171923293137414347535961677173", "sieve.bf")
+}
 
