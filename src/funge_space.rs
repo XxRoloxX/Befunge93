@@ -1,4 +1,3 @@
-use std::io::Write;
 const FUNGE_SPACE_WIDTH: usize = 80; // By definition, the maximum size of a funge space is 80x25
 const FUNGE_SPACE_HEIGHT: usize = 25;
 
@@ -18,16 +17,6 @@ fn format_string_to_matrix(plain: &str) -> [[char; FUNGE_SPACE_WIDTH]; FUNGE_SPA
     }
     return matrix;
 }
-fn format_matrix_to_string(matrix: [[char; FUNGE_SPACE_WIDTH]; FUNGE_SPACE_HEIGHT]) -> String {
-    let mut plain = String::new();
-    for row in matrix.iter() {
-        for character in row.iter() {
-            plain.push(*character);
-        }
-        plain.push('\n');
-    }
-    return plain;
-}
 
 impl FungeSpace {
     pub fn new(plain: &str) -> FungeSpace {
@@ -45,8 +34,7 @@ impl FungeSpace {
         self.plain[y][x]
     }
 
-    pub fn set_symbol_at(&mut self, x:usize, y:usize, symbol:char){
+    pub fn set_symbol_at(&mut self, x: usize, y: usize, symbol: char) {
         self.plain[y][x] = symbol;
     }
-
 }
