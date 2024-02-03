@@ -10,7 +10,7 @@ fn main() {
     let funge_space = read_to_string(&args.program_path);
     Interpreter::new(
         &funge_space.unwrap(), 
-        None,
+        args.input_buffer(),
         args.output_buffer()
         ).run();
 

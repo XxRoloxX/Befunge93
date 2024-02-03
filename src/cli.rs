@@ -1,5 +1,5 @@
 use clap::Parser;
-use crate::{io::FileOutput, InterpreterOutput};
+use crate::{io::FileOutput, io::FileInput, InterpreterOutput, InterpreterInput};
 
 
 #[derive(Parser)]
@@ -18,6 +18,14 @@ impl Cli {
         Some(path) => Some(FileOutput::boxed_new(path.to_str().unwrap())),
         None => None,
     }
-}
+    }
+    
+    pub fn input_buffer(&self) -> Option<InterpreterInput> {
+        match &self.input_path {
+            Some(path) => Some(FileInput::boxed_new(path.to_str().unwrap())),
+            None => None,
+        }
+    }
+    
 }
 
