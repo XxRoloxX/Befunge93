@@ -1,10 +1,10 @@
 use crate::{FungeSpace, InterpreterInput, InterpreterOutput, Pointer, Stack, StackValue};
 use log::info;
 use std::cell::RefCell;
+use std::fmt::{Debug, Formatter};
 use std::io::{stdin, stdout};
 use std::io::{BufReader, BufWriter};
 use std::rc::Rc;
-use std::fmt::{Debug, Formatter};
 pub struct Interpreter {
     space: FungeSpace,
     stack: Stack<StackValue>,
@@ -25,6 +25,7 @@ impl Debug for Interpreter {
             .finish()
     }
 }
+
 #[derive(Debug, Clone, Copy)]
 pub enum ReadMode {
     String,
@@ -51,7 +52,7 @@ impl Interpreter {
     pub fn get_space(&mut self) -> &mut FungeSpace {
         &mut self.space
     }
-    pub fn get_immutable_space(&self)->&FungeSpace {
+    pub fn get_immutable_space(&self) -> &FungeSpace {
         &self.space
     }
     pub fn get_pointer(&mut self) -> &mut Pointer {
