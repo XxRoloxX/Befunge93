@@ -1,5 +1,11 @@
 use crate::instructions::{
-    AddInstruction, BridgeInstruction, ComparisonInstruction, DivInstruction, DuplicateInstruction, Executable, FinishInstruction, GetSymbolFromSpaceInstruction, HorizontalIfInstruction, InputCharInstruction, InputIntInstruction, ModInstruction, MoveDownInstruction, MoveLeftInstruction, MoveRightInstruction, MoveUpInstruction, MulInstruction, NegationInstruction, PopValueInstruction, PrintCharInstruction, PrintIntInstruction, PutCharInstruction, PutIntInstruction, PutSymbolInSpaceInstruction, RandomDirectionInstruction, SubInstruction, SwapInstruction, SwitchStringModeInstruction, VerticalIfInstruction
+    AddInstruction, BridgeInstruction, ComparisonInstruction, DivInstruction, DuplicateInstruction,
+    Executable, FinishInstruction, GetSymbolFromSpaceInstruction, HorizontalIfInstruction,
+    InputCharInstruction, InputIntInstruction, ModInstruction, MoveDownInstruction,
+    MoveLeftInstruction, MoveRightInstruction, MoveUpInstruction, MulInstruction,
+    NegationInstruction, PopValueInstruction, PrintCharInstruction, PrintIntInstruction,
+    PutIntInstruction, PutSymbolInSpaceInstruction, RandomDirectionInstruction, SubInstruction,
+    SwapInstruction, SwitchStringModeInstruction, VerticalIfInstruction,
 };
 use lazy_static::lazy_static;
 use std::sync::Arc;
@@ -110,10 +116,10 @@ fn get_instruction_mapping() -> Arc<[InstructionSymbolMapping]> {
             instruction: Arc::from(GetSymbolFromSpaceInstruction {}),
             symbol: 'g',
         },
-        InstructionSymbolMapping{
-            instruction: Arc::from(RandomDirectionInstruction{}),
-            symbol: '?'
-        }
+        InstructionSymbolMapping {
+            instruction: Arc::from(RandomDirectionInstruction {}),
+            symbol: '?',
+        },
     ])
 }
 
@@ -127,8 +133,6 @@ pub fn map_symbol_to_instruction(symbol: char) -> Option<Arc<dyn Executable>> {
         return mapped_value;
     } else if let Some(a) = symbol.to_digit(10) {
         return Some(Arc::from(PutIntInstruction(a as i32)));
-    } else if symbol.is_alphabetic() {
-        return Some(Arc::from(PutCharInstruction(symbol)));
     } else {
         return None;
     }

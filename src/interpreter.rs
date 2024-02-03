@@ -1,9 +1,10 @@
 use crate::{FungeSpace, InterpreterInput, InterpreterOutput, Pointer, Stack, StackValue};
+use log::info;
 use std::cell::RefCell;
 use std::io::{stdin, stdout};
 use std::io::{BufReader, BufWriter};
 use std::rc::Rc;
-
+use std::fmt::{Debug, Formatter};
 pub struct Interpreter {
     space: FungeSpace,
     stack: Stack<StackValue>,
@@ -13,6 +14,18 @@ pub struct Interpreter {
     input: InterpreterInput,
     output: InterpreterOutput,
 }
+
+impl Debug for Interpreter {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("Interpreter")
+            .field("stack", &self.stack)
+            .field("mode", &self.mode)
+            .field("pointer", &self.pointer)
+            .field("instruction", &self.pointer.get_current_symbol(self))
+            .finish()
+    }
+}
+#[derive(Debug, Clone, Copy)]
 pub enum ReadMode {
     String,
     Normal,
@@ -74,11 +87,8 @@ impl Interpreter {
     pub fn run(&mut self) {
         while self.is_running {
             self.pointer.wrap_pointer(&self.space);
+            info!("{:?}", self);
             self.execute_current_instruction();
-            // print!(
-            //     "Position: ({:?}), , Stack: {:?}\n",
-            //     self.pointer, self.stack
-            // );
             self.pointer.current_move();
         }
     }

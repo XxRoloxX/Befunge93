@@ -75,4 +75,8 @@ fn self_modification_2(){
 fn sieve_of_eratosthenes(){
     generic_test(vec![], "23571113171923293137414347535961677173", "sieve.bf")
 }
+// #[test]
+// fn self_interpreter(){
+//     generic_test(Vec::from("12+.@".as_bytes()), "2", "self_interpreter.bf")
+// }
 

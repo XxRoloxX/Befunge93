@@ -29,6 +29,17 @@ impl Pointer {
             direction: Direction::Right,
         }
     }
+    pub fn get_x(&self) -> i32 {
+        self.x
+    }
+    pub fn get_y(&self) -> i32 {
+        self.y
+    }
+    pub fn get_current_symbol(&self, interpreter: &Interpreter) -> char {
+        interpreter
+            .get_immutable_space()
+            .get_symbol_at(self.x as usize, self.y as usize)
+    }
 
     pub fn move_vertically(&mut self, steps: i32) {
         self.y = self.y + steps;

@@ -155,6 +155,7 @@ impl Executable for MulInstruction {
         stack_operations::binary_arithmetic_operation_on_stack(interpreter, |a, b| a * b);
     }
 }
+
 impl Executable for PrintCharInstruction {
     fn execute(&self, interpreter: &mut Interpreter) {
         match interpreter.get_stack().remove_value_from_stack() {
@@ -294,9 +295,7 @@ impl Executable for InputCharInstruction {
             .read_exact(&mut buf)
             .expect("Failed to read from input");
 
-        interpreter
-            .get_stack()
-            .push(StackValue::Int(buf[0] as i64));
+        interpreter.get_stack().push(StackValue::Int(buf[0] as i64));
     }
 }
 
@@ -347,7 +346,9 @@ impl Executable for ComparisonInstruction {
 
 impl Executable for PutSymbolInSpaceInstruction {
     fn execute(&self, interpreter: &mut Interpreter) {
-        let (y, x) = interpreter.get_stack().get_two_items_from_stack();
+        let (mut y, mut x) = interpreter.get_stack().get_two_items_from_stack();
+        y = convert_empty_stack_value_to_default_int(y);
+        x = convert_empty_stack_value_to_default_int(x);
         let symbol = interpreter.get_stack().remove_value_from_stack();
         let space = interpreter.get_space();
         match symbol {
@@ -359,7 +360,9 @@ impl Executable for PutSymbolInSpaceInstruction {
 
 impl Executable for GetSymbolFromSpaceInstruction {
     fn execute(&self, interpreter: &mut Interpreter) {
-        let (y, x) = interpreter.get_stack().get_two_items_from_stack();
+        let (mut y, mut x) = interpreter.get_stack().get_two_items_from_stack();
+        y = convert_empty_stack_value_to_default_int(y);
+        x = convert_empty_stack_value_to_default_int(x);
         let space = interpreter.get_space();
         if let (StackValue::Int(y), StackValue::Int(x)) = (y, x) {
             let symbol = space.get_symbol_at(x as usize, y as usize);
